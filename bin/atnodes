@@ -87,9 +87,9 @@ if ($set->is_empty) {
 my @hosts = sort $set->elements;
 
 if ($verbose) {
-    warn "Cluster set: ", join(' ', ), "\n";
+    warn "Cluster set: @hosts\n";
 } elsif ($list_hosts_only) {
-    print "Cluster set: ", join(' ', sort { $a cmp $b } $set->elements), "\n";
+    print "Cluster set: @hosts\n";
 }
 
 if ($list_hosts_only) {
@@ -154,7 +154,8 @@ OPTIONS:
     -p <port>     Port for the remote SSH service.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
-    -v            Being verbose
+    -v            Be verbose.
+    -w <pass>     Password used for login and sudo.
 _EOC_
     if ($exit_code == 0) {
         print $msg;

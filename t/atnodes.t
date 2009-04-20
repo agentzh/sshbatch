@@ -4,7 +4,7 @@ use t::atnodes;
 
 plan tests => 3 * blocks();
 
-no_diff();
+#no_diff();
 
 run_tests();
 
@@ -49,7 +49,8 @@ OPTIONS:
     -p <port>     Port for the remote SSH service.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
-    -v            Being verbose
+    -v            Be verbose.
+    -w <pass>     Password used for login and sudo.
 
 --- status: 1
 
