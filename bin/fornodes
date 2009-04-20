@@ -10,10 +10,12 @@ sub parse_expr ($);
 sub parse_term ($);
 sub parse_atom ($);
 sub expand_seg ($@);
+sub expand_wildcards ($);
 
 my $RangePat = qr/\w+(?:-\w+)?/;
 my $RcFile = '~/.fornodesrc';
 my %Vars;
+my $HostUniverse = Set::Scalar->new;
 
 sub load_rc ($) {
     my $rcfile = shift;
@@ -159,6 +161,15 @@ sub parse_atom ($) {
     }
     my $hosts = expand_seg(\@segs);
     my $set = Set::Scalar->new;
+    for my $host (@$hosts) {
+        if ($host =~ /[*?]/) {
+            $set->insert(expand_wildcards($host));
+        } else {
+            $set->insert($host);
+            $HostUniverse->insert($host);
+        }
+    }
+    return $set;
 }
 
 sub expand_seg ($@) {
@@ -178,5 +189,18 @@ sub expand_seg ($@) {
         }
     }
     return expand_seg($list, \@new_prefixes);
+}
+
+sub expand_wildcards ($) {
+    my $pat = quotemeta $_[0];
+    $pat =~ s/\\\*/.*?/g;
+    $pat =~ s/\\\?/./g;
+    my @retvals;
+    while (defined(my $host = $HostUniverse->each)) {
+        if ($host =~ /^$pat$/) {
+            push @retvals, $host;
+        }
+    }
+    return @retvals;
 }
 
