@@ -74,3 +74,22 @@ api02.foo.com
 api02.foo.com
 --- status: 0
 
+
+
+=== TEST 8: variable reference
+--- expr: {api}
+--- err
+--- out
+api01.foo.com
+api02.foo.com
+--- status: 0
+
+
+
+=== TEST 9: variable reference (with spaces)
+--- expr: { api }
+--- err
+Invalid variable reference syntax: {
+--- out
+--- status: 255
+

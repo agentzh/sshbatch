@@ -118,7 +118,7 @@ sub parse_expr ($) {
 
 sub parse_term ($) {
     local *_ = \($_[0]);
-    if (/^\{\s*([^}\s]*)\s*\}$/) {
+    if (/^ \{ ( [^}\s]* ) \} $/x) {
         my $var = $1;
         if ($var !~ /^[-\w]+$/) {
             die "Invalid variable name in term $_: $var\n";
