@@ -1,0 +1,14 @@
+*~
+*.json
+*.o
+*.hi
+!*.t.json
+cover_db
+Makefile
+blib
+*.old
+*.swp
+pm_to_blib
+share/font
+t/*.dat
+*.tar.gz
