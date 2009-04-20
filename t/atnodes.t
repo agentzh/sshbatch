@@ -50,7 +50,7 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w <pass>     Password used for login and sudo.
+    -w            Prompt for password (used for login and sudo).
 
 --- status: 1
 

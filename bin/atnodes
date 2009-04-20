@@ -5,6 +5,7 @@ use warnings;
 
 use lib 'lib';
 use Net::OpenSSH;
+use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
 
@@ -16,7 +17,7 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout, $verbose);
+my ($user, $port, $timeout, $verbose, $ask_for_pass);
 my (@cmd, @exprs);
 my $fetch_value;
 my $found_sep;
@@ -49,6 +50,8 @@ for (@ARGV) {
             $fetch_value = sub { $port = shift };
         } elsif ($group eq 'v') {
             $verbose = 1;
+        } elsif ($group eq 'w') {
+            $ask_for_pass = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -96,6 +99,19 @@ if ($list_hosts_only) {
     exit(0);
 }
 
+my $password;
+if ($ask_for_pass) {
+    print STDERR "Password:";
+    ReadMode(2);
+    while (not defined ($password = ReadLine(0))) {
+    }
+    ReadMode(0);
+    chomp $password;
+    if (!$password) {
+        die "No password specified.\n";
+    }
+}
+
 my %conns;
 for my $host (@hosts) {
     $conns{$host} = Net::OpenSSH->new(
@@ -104,16 +120,19 @@ for my $host (@hosts) {
         defined $timeout ? (timeout => $timeout) : (),
         defined $user ? (user => $user) : (),
         defined $port ? (port => $port) : (),
+        defined $password ? (password => $password) : (),
     );
 }
 my (@pids, @outs);
 for my $host (@hosts) {
     my ($out, $outfile) = tmpnam();
     push @outs, $outfile;
-    push @pids, $conns{$host}->spawn({
-        stdin_discard => 1,
+    push @pids, $conns{$host}->system({
+        (defined $password?
+            (stdin_data => "$password\n") : (stdin_discard => 1)),
         stdout_fh => $out,
         stderr_to_stdout => 1,
+        async => 1,
         tty => 1,
     }, @cmd);
 }
@@ -155,7 +174,7 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w <pass>     Password used for login and sudo.
+    -w            Prompt for password (used for login and sudo).
 _EOC_
     if ($exit_code == 0) {
         print $msg;
