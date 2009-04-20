@@ -31,6 +31,15 @@ The following scripts are provided:
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
 
+INSTALL
+
+    perl Makefile.PL
+    make
+    make test
+    sudo make install
+
+COPYRIGHT & LICENSE
+
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
