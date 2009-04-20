@@ -17,14 +17,14 @@ The following scripts are provided:
     $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
     $ fornodes '{ps} * {as}'  # set intersect
 
-* atnodes
+* atnodes (TODO)
 
   Run command on clusters.
 
     # atnodes calls fornodes internally:
     $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
 
-* tonodes
+* tonodes (TODO)
 
   Transfer local files or directories to clusters.
 
