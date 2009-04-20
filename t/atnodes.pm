@@ -49,7 +49,11 @@ sub run_test ($) {
     IPC::Run3::run3 $cmd, \$in, \$out, \$err;
     if (defined $block->status) {
         #warn "status: $?\n";
-        is $? >> 8, $block->status, "$name - status ok";
+        if ($? == 0) {
+            is($? >> 8, $block->status, "$name - status ok");
+        } else {
+            ok($? >> 8, "$name - status ok");
+        }
     }
     if (defined $block->no_home) {
         $ENV{HOME} = $prev_home;
