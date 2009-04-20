@@ -13,7 +13,9 @@ requires            ('File::HomeDir' => '0.86');
 requires            ('Net::OpenSSH'  => '0.34');
 
 build_requires      ('IPC::Run3');
-build_requires      ('Test::Base' => '0.54');
+#build_requires      ('Test::Base' => '0.54');
+
+use_test_base;
 
 no_index( directory => qw< t inc doc share demo > );
 
