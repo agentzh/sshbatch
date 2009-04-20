@@ -24,6 +24,12 @@ my %Vars;
 my $HostUniverse = Set::Scalar->new;
 
 load_rc($RcFile);
+my $expr = join ' ', @ARGV or
+    die "No argument specified.\n";
+my $set = parse_expr($expr);
+while (defined(my $host = $set->each)) {
+    print "$host\n";
+}
 
 sub load_rc ($) {
     my $rcfile = shift;
@@ -79,12 +85,10 @@ sub parse_expr ($) {
     my @toplevel = split /\s+([-+*]?)\s*/, $_;
     my $expect_term = 1;
     for my $raw_op (@toplevel) { # op would be either operands or operators
-        my $op;
         if (!defined $raw_op || $raw_op eq '') {
-            $op = '+';
-        } else {
-            $op = $raw_op;
+            $raw_op = '+';
         }
+        my $op = $raw_op;
 
         if ($op =~ /^[-+*]$/) {
             if ($expect_term) {
@@ -115,9 +119,10 @@ sub parse_expr ($) {
         } elsif ($op eq '*') {
             unshift @toplevel, $a * $b;
         } else {
-            die "Invalid operator $op\n";
+            die "Invalid operator : [$op]\n";
         }
     }
+    return @toplevel ? $toplevel[0] : Set::Scalar->new;
 }
 
 sub parse_term ($) {
