@@ -11,6 +11,7 @@ all_from            ('lib/SSH/Batch.pm');
 requires            ('Set::Scalar'   => '1.23');
 requires            ('File::HomeDir' => '0.86');
 requires            ('Net::OpenSSH'  => '0.34');
+requires            ('File::Temp');
 
 build_requires      ('IPC::Run3');
 #build_requires      ('Test::Base' => '0.54');

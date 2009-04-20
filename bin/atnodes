@@ -4,8 +4,9 @@ use strict;
 use warnings;
 
 use lib 'lib';
-use Net::OpenSSH ();
+use Net::OpenSSH;
 use SSH::Batch::ForNodes;
+use File::Temp qw/ :POSIX /;
 
 sub help ($);
 
@@ -83,9 +84,10 @@ my $set = SSH::Batch::ForNodes::parse_expr($expr);
 if ($set->is_empty) {
     die "No machine to be operated.\n";
 }
+my @hosts = sort $set->elements;
 
 if ($verbose) {
-    warn "Cluster set: ", join(' ', sort { $a cmp $b } $set->elements), "\n";
+    warn "Cluster set: ", join(' ', ), "\n";
 } elsif ($list_hosts_only) {
     print "Cluster set: ", join(' ', sort { $a cmp $b } $set->elements), "\n";
 }
@@ -94,9 +96,38 @@ if ($list_hosts_only) {
     exit(0);
 }
 
-my %conn;
-while (defined(my $host = $set->each)) {
-    $conn{$host} = Net::OpenSSH->new($host, async => 1);
+my %conns;
+for my $host (@hosts) {
+    $conns{$host} = Net::OpenSSH->new($host, async => 1);
+}
+my (@pids, @outs);
+for my $host (@hosts) {
+    my ($out, $outfile) = tmpnam();
+    push @outs, $outfile;
+    push @pids, $conns{$host}->spawn({
+        stdin_discard => 1,
+        stdout_fh => $out,
+        stderr_to_stdout => 1,
+        tty => 1,
+    }, @cmd);
+}
+
+my $i = 0;
+for my $pid (@pids) {
+    waitpid($pid, 0);
+    my $outfile = shift @outs;
+    my $in;
+    if (!open $in, $outfile) {
+        warn "Can't open $outfile for reading: $!\n";
+        next;
+    }
+    my $host = $hosts[$i++];
+    print "===" x 10, " $host ", "===" x 10, "\n";
+    while (<$in>) {
+        print;
+    }
+    print "\n";
+    close $in;
 }
 
 sub help ($) {

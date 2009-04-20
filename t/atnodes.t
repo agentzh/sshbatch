@@ -75,6 +75,8 @@ No cluster expression specified.
 
 === TEST 6: commands & expression
 --- args: ls '*' -- foo.com '*.bar.cn' -l -v
+--- rc
+blah=foo
 --- out
 --- err
 Command: [ls][*]
