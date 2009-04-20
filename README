@@ -2,7 +2,7 @@ SSH::Batch
 
 DESCRIPTION
 
-This is a Perl module for cluster operations based on Net::OpenSSH.
+This is a Perl module for cluster operations based on Net::OpenSSH and set operations.
 
 The following scripts are provided:
 
