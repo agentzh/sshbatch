@@ -38,7 +38,7 @@ The following scripts are provided:
     # use -w to prompt for password if w/o SSH key (no echo back)
     $ atnodes hostname '{ps}' -u agentz -w
 
-    # or sudo required...
+    # or prompt for password if sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
 
     # or specify a timeout:
