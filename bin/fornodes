@@ -19,7 +19,7 @@ SSH::Batch::ForNodes::load_rc($rc, $rcfile);
 my $expr = join ' ', @ARGV or
     die "No argument specified.\n";
 my $set = SSH::Batch::ForNodes::parse_expr($expr);
-while (defined(my $host = $set->each)) {
+for my $host (sort { $a cmp $b } $set->elements) {
     print "$host\n";
 }
 

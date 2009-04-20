@@ -16,7 +16,7 @@ sub parse_atom ($);
 sub expand_seg ($@);
 sub expand_wildcards ($);
 
-my $RangePat = qr/\w+(?:-\w+)?/;
+my $RangePat = qr/\w+(?:(?:-|\.\.)\w+)?/;
 my %Vars;
 our $HostUniverse = Set::Scalar->new;
 
@@ -147,7 +147,7 @@ sub parse_atom ($) {
             my @ranges = split /,/, $range;
             my @num;
             for my $range (@ranges) {
-                my ($a, $b) = split /-/, $range;
+                my ($a, $b) = split /(?:-|\.\.)/, $range;
                 #if (defined $b && ($a =~ /\D/ || $b =~ /\D/) && length $a ne length $b) {
                     #die "End points are not of equal lengths in the host range: $a-$b\n";
                 #}
