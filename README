@@ -19,14 +19,14 @@ The following scripts are provided:
 
 * atnodes
 
-  Run command on clusters
+  Run command on clusters.
 
     # atnodes calls fornodes internally:
     $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
 
 * tonodes
 
-  Transfer local files or directories to clusters
+  Transfer local files or directories to clusters.
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
