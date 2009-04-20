@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use lib 'lib';
+use Net::OpenSSH ();
 use SSH::Batch::ForNodes;
 
 sub help ($);
@@ -61,16 +62,36 @@ if (!$found_sep && !@cmd) {
 if (!@cmd) {
     die "No command specified.\n";
 }
+
+if ($verbose) {
+    warn "Command: ", (map { "[$_]" } @cmd), "\n";
+}
+
 if (!@exprs) {
     die "No cluster expression specified.\n";
 }
 my $expr = join ' ', @exprs;
 
+if ($verbose) {
+    warn "Cluster expression: $expr\n";
+}
+
 my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
 SSH::Batch::ForNodes::load_rc($rc, $rcfile);
 my $set = SSH::Batch::ForNodes::parse_expr($expr);
+
 if ($set->is_empty) {
     die "No machine to be operated.\n";
+}
+
+if ($verbose) {
+    warn "Cluster set: ", join(' ', sort { $a cmp $b } $set->elements), "\n";
+} elsif ($list_hosts_only) {
+    print "Cluster set: ", join(' ', sort { $a cmp $b } $set->elements), "\n";
+}
+
+if ($list_hosts_only) {
+    exit(0);
 }
 
 my %conn;

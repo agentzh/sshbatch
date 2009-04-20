@@ -3,12 +3,14 @@
 use strict;
 use warnings;
 
+#use Smart::Comments::JSON '##';
 use lib 'lib';
 use SSH::Batch::ForNodes;
 
 my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
 SSH::Batch::ForNodes::load_rc($rc, $rcfile);
 
+## @ARGV
 my $expr = join ' ', @ARGV or
     die "No argument specified.\n";
 my $set = SSH::Batch::ForNodes::parse_expr($expr);

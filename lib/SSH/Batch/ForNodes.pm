@@ -86,12 +86,22 @@ sub parse_line ($$) {
 
 sub parse_expr ($) {
     local *_ = \($_[0]);
-    my @toplevel = split / \s+ ([-+*]?) \s* /x, $_;
+    my @toplevel;
+    while (1) {
+        if (/\G \s* (?<= [\}\)\s] ) ([-+*]) (?= [\{\(\s] ) \s*/gcx) {
+            push @toplevel, $1;
+        } elsif (/\G \{ .*? \} /gcx) {
+            push @toplevel, $&;
+        } elsif (/\G \S+ /gcx) {
+            push @toplevel, $&;
+        } elsif (/\G \s+ /gcx) {
+            push @toplevel, '+';
+        } else {
+            last;
+        }
+    }
     my $expect_term = 1;
     for my $raw_op (@toplevel) { # op would be either operands or operators
-        if (!defined $raw_op || $raw_op eq '') {
-            $raw_op = '+';
-        }
         my $op = $raw_op;
 
         if ($op =~ /^[-+*]$/) {
@@ -179,9 +189,11 @@ sub parse_atom ($) {
     my $hosts = expand_seg(\@segs);
     my $set = Set::Scalar->new;
     for my $host (@$hosts) {
-        if ($host =~ /[*?]/) {
+        #warn "Host: $host\n";
+        if ($host =~ /[\*\?]/) {
             $set->insert(expand_wildcards($host));
         } else {
+            #warn "Inserting $host: $host\n";
             $set->insert($host);
             $HostUniverse->insert($host);
         }

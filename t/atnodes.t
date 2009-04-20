@@ -71,3 +71,14 @@ No command specified.
 No cluster expression specified.
 --- status: 255
 
+
+
+=== TEST 6: commands & expression
+--- args: ls '*' -- foo.com '*.bar.cn' -l -v
+--- out
+--- err
+Command: [ls][*]
+Cluster expression: foo.com *.bar.cn
+Cluster set: foo.com
+--- status: 0
+
