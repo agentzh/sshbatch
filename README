@@ -21,10 +21,28 @@ The following scripts are provided:
 
 * atnodes
 
-  Run command on clusters.
+  Run command on clusters. (atnodes calls fornodes internally.)
 
-    # atnodes calls fornodes internally:
+    # run a command on the specified servers:
     $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
+
+    # multiple-arg command requires "--":
+    $ atnodes ls /opt/ -- '{ps} + {as}' 'localhost'
+
+    # or use single arg command:
+    $ atnodes 'ls /opt/' '{ps} + {as}' 'localhost' # ditto
+
+    # specify a different user name and SSH server port:
+    $ atnodes hostname '{ps}' -u agentz -p 12345
+
+    # if w/o SSH key
+    $ atnodes hostname '{ps}' -u agentz -w
+
+    # or sudo required...
+    $ atnodes 'apachectl restart' '{ps}' -u agentz -w
+
+    # or specify a timeout:
+    $ atnodes 'apachectl restart' '{ps}' -t 3
 
 * tonodes (TODO)
 
