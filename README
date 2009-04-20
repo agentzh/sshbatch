@@ -1,5 +1,7 @@
 SSH::Batch
 
+DESCRIPTION
+
 This is a Perl module for cluster operations based on Net::OpenSSH.
 
 The following scripts are provided:
@@ -31,7 +33,7 @@ The following scripts are provided:
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
 
-INSTALL
+INSTALLATION
 
     perl Makefile.PL
     make
