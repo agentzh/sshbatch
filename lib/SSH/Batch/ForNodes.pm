@@ -6,9 +6,9 @@ use warnings;
 our $VERSION = '0.001';
 
 use Set::Scalar;
-use File::HomeDir;
 
-sub load_rc ($);
+sub clear_universe ();
+sub load_rc ($$);
 sub parse_line ($$);
 sub parse_expr ($);
 sub parse_term ($);
@@ -17,18 +17,15 @@ sub expand_seg ($@);
 sub expand_wildcards ($);
 
 my $RangePat = qr/\w+(?:-\w+)?/;
-my $home = File::HomeDir->my_home;
-if (!defined $home) {
-    die "Can't find the home for the current user.\n";
-}
-my $RcFile = "$home/.fornodesrc";
 my %Vars;
-my $HostUniverse = Set::Scalar->new;
+our $HostUniverse = Set::Scalar->new;
 
-sub load_rc ($) {
-    my $rcfile = shift;
-    open my $rc, $rcfile or
-        die "Can't open $rcfile for reading: $!\n";
+sub clear_universe () {
+    $HostUniverse->empty;
+}
+
+sub load_rc ($$) {
+    my ($rc, $rcfile) = @_;
     my $accum_ln;
     while (<$rc>) {
         s/\#.*//;
@@ -128,8 +125,7 @@ sub parse_term ($) {
         }
         my $set = $Vars{$var};
         if (!defined $set) {
-            die "Variable $var not defined.\n",
-                "\t(Maybe you forgot to define it in $RcFile?)\n";
+            die "Variable $var not defined.\n";
         }
         return $set;
     }

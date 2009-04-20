@@ -10,6 +10,9 @@ all_from            ('lib/SSH/Batch.pm');
 
 requires            ('Set::Scalar'   => '1.23');
 requires            ('File::HomeDir' => '0.86');
+requires            ('Net::OpenSSH'  => '0.34');
+
+build_requires      ('IPC::Run3');
 
 no_index( directory => qw< t inc doc share demo > );
 

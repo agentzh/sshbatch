@@ -2,9 +2,20 @@
 
 use strict;
 use warnings;
+
+use lib 'lib';
+use File::HomeDir;
 use SSH::Batch::ForNodes;
 
-SSH::Batch::ForNodes::load_rc($RcFile);
+my $home = File::HomeDir->my_home;
+if (!defined $home) {
+    die "Can't find the home for the current user.\n";
+}
+my $rcfile = "$home/.fornodesrc";
+open my $rc, $rcfile or
+    die "Can't open $rcfile for reading: $!\n";
+SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+
 my $expr = join ' ', @ARGV or
     die "No argument specified.\n";
 my $set = parse_expr($expr);
