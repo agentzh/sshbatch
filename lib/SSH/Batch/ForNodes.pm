@@ -226,9 +226,23 @@ __END__
 
 =head1 NAME
 
-SSH::Batch::ForNodes - Expand patterns to node lists (i.e., machine host lists)
+SSH::Batch::ForNodes - expands set arithmetic expression to host list
 
 =head1 SYNOPSIS
+
+    # below is essential what in the "fornodes" script:
+    use SSH::Batch::ForNodes;
+
+    my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
+    SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+    my $set = SSH::Batch::ForNodes::parse_expr($expr);
+    for my $host (sort { $a cmp $b } $set->elements) {
+        print "$host\n";
+    }
+
+=head1 AUTHOR
+
+Agent Zhang (agentzh) C<< <agentzh@yahoo.cn> >>
 
 =head1 COPYRIGHT AND LICENSE
 
