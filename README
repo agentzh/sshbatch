@@ -2,8 +2,7 @@ SSH::Batch
 
 DESCRIPTION
 
-This is a Perl module for cluster operations based on Net::OpenSSH,
-set arithmetic, and interval arithmetic.
+This is a Perl module for cluster operations based on Net::OpenSSH, set arithmetic, and interval arithmetic.
 
 The following scripts are provided:
 
