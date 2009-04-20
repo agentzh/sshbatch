@@ -10,4 +10,4 @@ pm_to_blib
 \.git*
 po/foo\.po$
 po/meta\.po$
-
+t/tmp

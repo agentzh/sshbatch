@@ -23,6 +23,7 @@ use_test_base;
 no_index( directory => qw< t inc doc share demo > );
 
 install_script      ('bin/fornodes');
+install_script      ('bin/atnodes');
 
 auto_install();
 WriteAll();

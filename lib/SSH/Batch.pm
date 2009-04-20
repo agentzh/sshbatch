@@ -10,29 +10,78 @@ __END__
 
 =head1 NAME
 
-SSH::Batch - Perl module for cluster operations based on Net::OpenSSH
+SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmetic
 
-=head1 DESCRIPTION
+=head1 SYNOPSIS
 
 The following scripts are provided:
 
-* fornodes
+=over
+
+=item fornodes
+
+Expand patterns to machine host list.
 
     $ cat > ~/.fornodesrc
     ps=blah.ps.com bloo.ps.com boo[2-25,26-70].ps.com
     as=ws[1101-1105].as.com
     ^D
     $ fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
-    $ fornodes '{ps} + {as} - ws1104.as.com'
+    $ fornodes 'tq[ab-ac].[1101-1105].foo.com'
+    $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
+    $ fornodes '{ps} * {as}'  # set intersect
 
-* atnodes
+=item atnodes
 
+Run command on clusters. (atnodes calls fornodes internally.)
+
+    # run a command on the specified servers:
     $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
 
-* tonodes
+    # multiple-arg command requires "--":
+    $ atnodes ls /opt/ -- '{ps} + {as}' 'localhost'
+
+    # or use single arg command:
+    $ atnodes 'ls /opt/' '{ps} + {as}' 'localhost' # ditto
+
+    # specify a different user name and SSH server port:
+    $ atnodes hostname '{ps}' -u agentz -p 12345
+
+    # use -w to prompt for password if w/o SSH key (no echo back)
+    $ atnodes hostname '{ps}' -u agentz -w
+
+    # or prompt for password if sudo required...
+    $ atnodes 'sudo apachectl restart' '{ps}' -w
+
+    # or specify a timeout:
+    $ atnodes 'ping foo.com' '{ps}' -t 3
+
+=item tonodes (TODO)
+
+Transfer local files or directories to clusters.
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
+
+=back
+
+=head1 INSTALLATION
+
+    perl Makefile.PL
+    make
+    make test
+    sudo make install
+
+Win32 users should replace "make" with "nmake".
+
+=head1 SOURCE CONTROL
+
+You can always get the latest SSH::Batch source from its
+public Git repository:
+
+    http://github.com/agentzh/sshbatch/tree/master
+
+If you have a branch for me to pull, please let me know ;)
 
 =head1 COPYRIGHT AND LICENSE
 
