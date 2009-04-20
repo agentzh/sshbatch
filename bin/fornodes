@@ -4,16 +4,9 @@ use strict;
 use warnings;
 
 use lib 'lib';
-use File::HomeDir;
 use SSH::Batch::ForNodes;
 
-my $home = File::HomeDir->my_home;
-if (!defined $home) {
-    die "Can't find the home for the current user.\n";
-}
-my $rcfile = "$home/.fornodesrc";
-open my $rc, $rcfile or
-    die "Can't open $rcfile for reading: $!\n";
+my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
 SSH::Batch::ForNodes::load_rc($rc, $rcfile);
 
 my $expr = join ' ', @ARGV or

@@ -6,8 +6,10 @@ use warnings;
 our $VERSION = '0.001';
 
 use Set::Scalar;
+use File::HomeDir;
 
 sub clear_universe ();
+sub init ();
 sub load_rc ($$);
 sub parse_line ($$);
 sub parse_expr ($);
@@ -22,6 +24,17 @@ our $HostUniverse = Set::Scalar->new;
 
 sub clear_universe () {
     $HostUniverse->empty;
+}
+
+sub init () {
+    my $home = File::HomeDir->my_home;
+    if (!defined $home) {
+        die "Can't find the home for the current user.\n";
+    }
+    my $rcfile = "$home/.fornodesrc";
+    open my $rc, $rcfile or
+        die "Can't open $rcfile for reading: $!\n";
+    return ($rc, $rcfile);
 }
 
 sub load_rc ($$) {
