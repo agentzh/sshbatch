@@ -332,3 +332,39 @@ b.2.com
 --- err
 --- status: 0
 
+
+
+=== TEST 30: bad range
+--- expr: [a-].com
+--- err
+Bad range: [a-]
+--- out
+--- status: 255
+
+
+
+=== TEST 31: bad range (2)
+--- expr: [a..].com
+--- err
+Bad range: [a..]
+--- out
+--- status: 255
+
+
+
+=== TEST 32: bad range (3)
+--- expr: [].com
+--- err
+Bad range: []
+--- out
+--- status: 255
+
+
+
+=== TEST 33: not a bad range
+--- expr: [a].com
+--- err
+--- out
+a.com
+--- status: 0
+

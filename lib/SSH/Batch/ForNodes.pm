@@ -139,10 +139,11 @@ sub parse_atom ($) {
     local *_ = \($_[0]);
     my @segs;
     while (1) {
-        if (/\G\[([^\]]+)\]/gc) {
+        if (/ \G \[ ( [^\]]* ) \] /xgc) {
             my $range = $1;
+            #warn "Range: $range\n";
             if ($range !~ m/^$RangePat(?:\s*,\s*$RangePat)*$/) {
-                die "Bad number range: [$range]\n";
+                die "Bad range: [$range]\n";
             }
             my @ranges = split /,/, $range;
             my @num;
