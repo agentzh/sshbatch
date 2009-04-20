@@ -10,7 +10,7 @@ run_tests();
 
 __DATA__
 
-=== TEST 34: no home
+=== TEST 1: no home
 --- no_home
 --- expr: abc
 --- err
@@ -19,7 +19,8 @@ Can't find the home for the current user.
 --- status: 2
 
 
-=== TEST 1: no rc given
+
+=== TEST 2: no rc given
 --- expr: foo
 --- no_rc
 --- out
@@ -29,7 +30,7 @@ Can't open **RC_FILE_PATH** for reading: No such file or directory
 
 
 
-=== TEST 2: no expr given
+=== TEST 3: no expr given
 --- rc
 api=api01.foo.com api02.foo.com
 --- expr:
@@ -40,7 +41,7 @@ No argument specified.
 
 
 
-=== TEST 3: literal hosts
+=== TEST 4: literal hosts
 --- expr: foo.com bar.cn
 --- err
 --- out
@@ -50,7 +51,7 @@ foo.com
 
 
 
-=== TEST 4: unmatched wildcard ?
+=== TEST 5: unmatched wildcard ?
 --- expr: api?.foo.com
 --- out
 --- err
@@ -58,7 +59,7 @@ foo.com
 
 
 
-=== TEST 5: matched wildcard ?
+=== TEST 6: matched wildcard ?
 --- expr: api??.foo.com
 --- out
 api01.foo.com
@@ -68,7 +69,7 @@ api02.foo.com
 
 
 
-=== TEST 6: wildcard *
+=== TEST 7: wildcard *
 --- expr: api*
 --- err
 --- out
@@ -78,7 +79,7 @@ api02.foo.com
 
 
 
-=== TEST 7: wildcard * with ?
+=== TEST 8: wildcard * with ?
 --- expr: api?2.*.com
 --- err
 --- out
@@ -87,7 +88,7 @@ api02.foo.com
 
 
 
-=== TEST 8: variable reference
+=== TEST 9: variable reference
 --- expr: {api}
 --- err
 --- out
@@ -97,7 +98,7 @@ api02.foo.com
 
 
 
-=== TEST 9: variable reference (with spaces)
+=== TEST 10: variable reference (with spaces)
 --- expr: { api }
 --- err
 Invalid variable reference syntax: {
@@ -106,7 +107,7 @@ Invalid variable reference syntax: {
 
 
 
-=== TEST 10: set +
+=== TEST 11: set +
 --- expr: {api} + {api}
 --- err
 --- out
@@ -116,7 +117,7 @@ api02.foo.com
 
 
 
-=== TEST 11: set -
+=== TEST 12: set -
 --- expr: {api} - {api}
 --- err
 --- out
@@ -124,7 +125,7 @@ api02.foo.com
 
 
 
-=== TEST 12: set -
+=== TEST 13: set -
 --- expr: {api} - api02*
 --- err
 --- out
@@ -133,7 +134,7 @@ api01.foo.com
 
 
 
-=== TEST 13: set -
+=== TEST 14: set -
 --- expr: api02* - api01*
 --- err
 --- out
@@ -142,7 +143,7 @@ api02.foo.com
 
 
 
-=== TEST 14: set -
+=== TEST 15: set -
 --- expr: api02* - {api}
 --- err
 --- out
@@ -150,7 +151,7 @@ api02.foo.com
 
 
 
-=== TEST 15: set *
+=== TEST 16: set *
 --- expr: {api} * {api}
 --- err
 --- out
@@ -160,7 +161,7 @@ api02.foo.com
 
 
 
-=== TEST 16: set *
+=== TEST 17: set *
 --- expr: {api} * api02*
 --- err
 --- out
@@ -169,7 +170,7 @@ api02.foo.com
 
 
 
-=== TEST 17: no spaces around operators
+=== TEST 18: no spaces around operators
 --- expr: api.com-api.com
 --- out
 api.com-api.com
@@ -178,7 +179,7 @@ api.com-api.com
 
 
 
-=== TEST 18: no spaces around operators
+=== TEST 19: no spaces around operators
 --- expr: api.com+api.com
 --- out
 api.com+api.com
@@ -187,7 +188,7 @@ api.com+api.com
 
 
 
-=== TEST 19: multiple variable refs
+=== TEST 20: multiple variable refs
 --- rc
 # .rc files...
 api=api[01-03].foo.com
@@ -202,7 +203,7 @@ api03.foo.com
 
 
 
-=== TEST 20: multiple variable refs
+=== TEST 21: multiple variable refs
 --- rc
 # .rc files...
 api=api[01-03].foo.com
@@ -233,7 +234,7 @@ tq1105.bar.cn
 
 
 
-=== TEST 21: intersect
+=== TEST 22: intersect
 --- expr: {api} * {tq}
 --- out
 api01.foo.com
@@ -244,7 +245,7 @@ api03.foo.com
 
 
 
-=== TEST 22: subtraction
+=== TEST 23: subtraction
 --- expr: {api} - {tq}
 --- out
 --- err
@@ -252,7 +253,7 @@ api03.foo.com
 
 
 
-=== TEST 23: subtraction (reversed)
+=== TEST 24: subtraction (reversed)
 --- expr: {tq} - {api}
 --- out
 tq1011.bar.cn
@@ -276,7 +277,7 @@ tq1105.bar.cn
 
 
 
-=== TEST 24: ranges with wildcards
+=== TEST 25: ranges with wildcards
 --- expr: {tq} * tq[1102-1104]* - tq1103*
 --- out
 tq1102.bar.cn
@@ -286,7 +287,7 @@ tq1104.bar.cn
 
 
 
-=== TEST 25: ranges using '..'
+=== TEST 26: ranges using '..'
 --- expr: [a..c].com
 --- out
 a.com
@@ -297,7 +298,7 @@ c.com
 
 
 
-=== TEST 26: ranges using -
+=== TEST 27: ranges using -
 --- expr: [a-c].com
 --- out
 a.com
@@ -308,7 +309,7 @@ c.com
 
 
 
-=== TEST 27: more ranges
+=== TEST 28: more ranges
 --- expr: [aa-ac].com
 --- out
 aa.com
@@ -319,7 +320,7 @@ ac.com
 
 
 
-=== TEST 28: more ranges
+=== TEST 29: more ranges
 --- expr: [9-12].com
 --- out
 10.com
@@ -331,7 +332,7 @@ ac.com
 
 
 
-=== TEST 29: two ranges in one pattern
+=== TEST 30: two ranges in one pattern
 --- expr: [a-b].[1..2].com
 --- out
 a.1.com
@@ -343,7 +344,7 @@ b.2.com
 
 
 
-=== TEST 30: bad range
+=== TEST 31: bad range
 --- expr: [a-].com
 --- err
 Bad range: [a-]
@@ -352,7 +353,7 @@ Bad range: [a-]
 
 
 
-=== TEST 31: bad range (2)
+=== TEST 32: bad range (2)
 --- expr: [a..].com
 --- err
 Bad range: [a..]
@@ -361,7 +362,7 @@ Bad range: [a..]
 
 
 
-=== TEST 32: bad range (3)
+=== TEST 33: bad range (3)
 --- expr: [].com
 --- err
 Bad range: []
@@ -370,7 +371,7 @@ Bad range: []
 
 
 
-=== TEST 33: not a bad range
+=== TEST 34: not a bad range
 --- expr: [a].com
 --- err
 --- out

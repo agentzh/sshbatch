@@ -9,7 +9,7 @@ use SSH::Batch::ForNodes;
 sub help ($);
 
 if (!@ARGV) {
-    warn "No argument specified.\n";
+    warn "No argument specified.\n\n";
     help(1);
 }
 
@@ -17,6 +17,7 @@ my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose);
 my (@cmd, @exprs);
 my $fetch_value;
+my $found_sep;
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -26,6 +27,7 @@ for (@ARGV) {
     if ($_ eq '--') {
         @cmd = @exprs;
         @exprs = ();
+        $found_sep = 1;
         next;
     }
     if (/^-([A-Za-z])(.*)/) {
@@ -53,7 +55,7 @@ for (@ARGV) {
     push @exprs, $_;
 }
 
-if (!@cmd) {
+if (!$found_sep && !@cmd) {
     push @cmd, shift @exprs;
 }
 if (!@cmd) {
