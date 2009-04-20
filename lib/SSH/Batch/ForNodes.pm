@@ -236,6 +236,7 @@ SSH::Batch::ForNodes - expands set arithmetic expression to host list
     my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
     SSH::Batch::ForNodes::load_rc($rc, $rcfile);
     my $set = SSH::Batch::ForNodes::parse_expr($expr);
+    # set is a Set::Scalar instance:
     for my $host (sort { $a cmp $b } $set->elements) {
         print "$host\n";
     }

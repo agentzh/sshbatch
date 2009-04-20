@@ -1,0 +1,100 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+use lib 'lib';
+use SSH::Batch::ForNodes;
+
+sub help ($);
+
+if (!@ARGV) {
+    warn "No argument specified.\n";
+    help(1);
+}
+
+my $list_hosts_only = 0;
+my ($user, $port, $timeout);
+my (@cmd, @exprs);
+my $fetch_value;
+for (@ARGV) {
+    if (defined $fetch_value) {
+        $fetch_value->($_);
+        undef $fetch_value;
+        next;
+    }
+    if ($_ eq '--') {
+        @cmd = @exprs;
+        @exprs = ();
+        next;
+    }
+    if (/^-([A-Za-z])(.*)/) {
+        if ($2 ne '') {
+            die "Unknown option: $_\n";
+        }
+        my $group = $1;
+        if ($group eq 'l') {
+            $list_hosts_only = 1;
+        } elsif ($group eq 'u') {
+            $fetch_value = sub { $user = shift };
+        } elsif ($group eq 't') {
+            $fetch_value = sub { $timeout = shift };
+        } elsif ($group eq 'h') {
+            help(0);
+        } elsif ($group eq 'p') {
+            $fetch_value = sub { $port = shift };
+        } else {
+            die "Unknown option: $_\n";
+        }
+        next;
+    }
+    push @exprs, $_;
+}
+
+if (!@cmd) {
+    push @cmd, shift @exprs;
+}
+if (!@cmd) {
+    die "No command specified.\n";
+}
+if (!@exprs) {
+    die "No cluster expression specified.\n";
+}
+my $expr = join ' ', @exprs;
+
+my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
+SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+my $set = SSH::Batch::ForNodes::parse_expr($expr);
+if ($set->is_empty) {
+    die "No machine to be operated.\n";
+}
+
+my %conn;
+while (defined(my $host = $set->each)) {
+    $conn{$host} = Net::OpenSSH->new($host, async => 1);
+}
+
+sub help ($) {
+    my $exit_code = shift;
+    my $msg = <<'_EOC_';
+USAGE:
+
+atnodes [OPTIONS] COMMAND... -- HOST_PATTERN... [OPTIONS]
+atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
+
+OPTIONS:
+    -h            Print this help.
+    -l            List the hosts and do nothing else.
+    -p <port>     Port for the remote SSH service.
+    -t <timeout>  Specify timeout for net traffic.
+    -u <user>     User account for SSH login.
+_EOC_
+    if ($exit_code == 0) {
+        print $msg;
+        exit(0);
+    } else {
+        warn $msg;
+        exit($exit_code);
+    }
+}
+
