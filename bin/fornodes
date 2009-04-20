@@ -1,0 +1,182 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use Set::Scalar;
+
+sub load_rc ($);
+sub parse_line ($$);
+sub parse_expr ($);
+sub parse_term ($);
+sub parse_atom ($);
+sub expand_seg ($@);
+
+my $RangePat = qr/\w+(?:-\w+)?/;
+my $RcFile = '~/.fornodesrc';
+my %Vars;
+
+sub load_rc ($) {
+    my $rcfile = shift;
+    open my $rc, $rcfile or
+        die "Can't open $rcfile for reading: $!\n";
+    my $accum_ln;
+    while (<$rc>) {
+        s/\#.*//;
+        next if /^\s*$/;
+        chomp;
+        if (s/\\\s*$//) {
+            $accum_ln .= $_;
+            next;
+        }
+        if (defined $accum_ln) {
+            parse_line($accum_ln, $rcfile);
+            undef $accum_ln;
+        }
+        parse_line($_, $rcfile);
+    }
+    close $rc;
+}
+
+sub parse_line ($$) {
+    local *_ = \($_[0]);
+    my $rcfile = $_[1];
+    if (/^\s*([^=\s]*)\s*=\s*(.*)/) {
+        my ($var, $def) = ($1, $2);
+        if ($var =~ /^[-\w]+$/) {
+            die "Invalid variable definition in $rcfile, line $.: ",
+                "$var\n";
+        }
+        my $set;
+        eval {
+            $set = parse_expr($def);
+        };
+        if ($@) {
+            die "Failed to parse the variable $var\'s value in $rcfile, ",
+                "line $.: $@";
+        } else {
+            if (defined $Vars{$var}) {
+                die "Variable redefinition in $rcfile line $.: $_\n";
+            }
+            $Vars{$var} = $set;
+        }
+    } else {
+        die "Syntax error in $rcfile, line $.: $_\n";
+    }
+}
+
+sub parse_expr ($) {
+    local *_ = \($_[0]);
+    my @toplevel = split /\s+([-+*]?)\s*/, $_;
+    my $expect_term = 1;
+    for my $raw_op (@toplevel) { # op would be either operands or operators
+        my $op;
+        if (!defined $raw_op || $raw_op eq '') {
+            $op = '+';
+        } else {
+            $op = $raw_op;
+        }
+
+        if ($op =~ /^[-+*]$/) {
+            if ($expect_term) {
+                die "Expecting terms but found operator $op.\n";
+            }
+            $expect_term = 1;
+            next;
+        }
+        if (!$expect_term) {
+            die "Expecting operators but found term $op\n";
+        }
+        $expect_term = 0;
+        eval {
+            $raw_op = parse_term($op);
+        };
+        if ($@) {
+            die $@;
+        }
+    }
+    while (@toplevel > 1) {
+        my $a = shift @toplevel;
+        my $op = shift @toplevel;
+        my $b = shift @toplevel;
+        if ($op eq '+') {
+            unshift @toplevel, $a + $b;
+        } elsif ($op eq '-') {
+            unshift @toplevel, $a - $b;
+        } elsif ($op eq '*') {
+            unshift @toplevel, $a * $b;
+        } else {
+            die "Invalid operator $op\n";
+        }
+    }
+}
+
+sub parse_term ($) {
+    local *_ = \($_[0]);
+    if (/^\{\s*([^}\s]*)\s*\}$/) {
+        my $var = $1;
+        if ($var !~ /^[-\w]+$/) {
+            die "Invalid variable name in term $_: $var\n";
+        }
+        my $set = $Vars{$var};
+        if (!defined $set) {
+            die "Variable $var not defined.\n",
+                "\t(Maybe you forgot to define it in $RcFile?)\n";
+        }
+        return $set;
+    }
+    if (/[{}]/) {
+        die "Invalid variable reference syntax: $_\n";
+    }
+    return parse_atom($_);
+}
+
+sub parse_atom ($) {
+    local *_ = \($_[0]);
+    my @segs;
+    while (1) {
+        if (/\G\[([^\]]+)\]/gc) {
+            my $range = $1;
+            if ($range !~ m/^$RangePat(?:\s*,\s*$RangePat)*$/) {
+                die "Bad number range: [$range]\n";
+            }
+            my @ranges = split /,/, $range;
+            my @num;
+            for my $range (@ranges) {
+                my ($a, $b) = split /-/, $range;
+                #if (defined $b && ($a =~ /\D/ || $b =~ /\D/) && length $a ne length $b) {
+                    #die "End points are not of equal lengths in the host range: $a-$b\n";
+                #}
+                push @num, defined $b ? $a..$b : $a;
+                #print "@num";
+            }
+            push @segs, \@num;
+        } elsif (/\G[^\[]+/gc) {
+            push @segs, [$&];
+            next;
+        } else {
+            last;
+        }
+    }
+    my $hosts = expand_seg(\@segs);
+    my $set = Set::Scalar->new;
+}
+
+sub expand_seg ($@) {
+    my ($list, $prefixes) = @_;
+    my $cur = shift @$list;
+    return $prefixes unless defined $cur;
+    my @new_prefixes;
+    if (!$prefixes) {
+        for my $alt (@$cur) {
+            push @new_prefixes, $alt;
+        }
+    } else {
+        for my $prefix (@$prefixes) {
+            for my $alt (@$cur) {
+                push @new_prefixes, $prefix . $alt;
+            }
+        }
+    }
+    return expand_seg($list, \@new_prefixes);
+}
+
