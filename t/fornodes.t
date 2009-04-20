@@ -156,3 +156,21 @@ api02.foo.com
 api02.foo.com
 --- status: 0
 
+
+
+=== TEST 17: no spaces around operators
+--- expr: api.com-api.com
+--- out
+api.com-api.com
+--- err
+--- status: 0
+
+
+
+=== TEST 18: no spaces around operators
+--- expr: api.com+api.com
+--- out
+api.com+api.com
+--- err
+--- status: 0
+

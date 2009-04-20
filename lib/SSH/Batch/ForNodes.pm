@@ -73,7 +73,7 @@ sub parse_line ($$) {
 
 sub parse_expr ($) {
     local *_ = \($_[0]);
-    my @toplevel = split /\s+([-+*]?)\s*/, $_;
+    my @toplevel = split / \s+ ([-+*]?) \s* /x, $_;
     my $expect_term = 1;
     for my $raw_op (@toplevel) { # op would be either operands or operators
         if (!defined $raw_op || $raw_op eq '') {
