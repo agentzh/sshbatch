@@ -39,12 +39,20 @@ sub run_test ($) {
     } elsif (defined $block->no_rc) {
         unlink $RcFile;
     }
+    my $prev_home;
+    if (defined $block->no_home) {
+        $prev_home = $ENV{HOME};
+        $ENV{HOME} = '/foo/bar/baz/32rdssfsd32';
+    }
     my @cmd = ($^X, 'bin/fornodes', $expr);
     my ($in, $out, $err);
     IPC::Run3::run3 \@cmd, \$in, \$out, \$err;
     if (defined $block->status) {
         #warn "status: $?\n";
         is $? >> 8, $block->status, "$name - status ok";
+    }
+    if (defined $block->no_home) {
+        $ENV{HOME} = $prev_home;
     }
     if (defined $block->err) {
         $err =~ s/\Q$RcFile\E/**RC_FILE_PATH**/g;

@@ -10,6 +10,15 @@ run_tests();
 
 __DATA__
 
+=== TEST 34: no home
+--- no_home
+--- expr: abc
+--- err
+Can't find the home for the current user.
+--- out
+--- status: 2
+
+
 === TEST 1: no rc given
 --- expr: foo
 --- no_rc
