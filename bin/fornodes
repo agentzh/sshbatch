@@ -2,7 +2,9 @@
 
 use strict;
 use warnings;
+
 use Set::Scalar;
+use File::HomeDir;
 
 sub load_rc ($);
 sub parse_line ($$);
@@ -13,9 +15,15 @@ sub expand_seg ($@);
 sub expand_wildcards ($);
 
 my $RangePat = qr/\w+(?:-\w+)?/;
-my $RcFile = '~/.fornodesrc';
+my $home = File::HomeDir->my_home;
+if (!defined $home) {
+    die "Can't find the home for the current user.\n";
+}
+my $RcFile = "$home/.fornodesrc";
 my %Vars;
 my $HostUniverse = Set::Scalar->new;
+
+load_rc($RcFile);
 
 sub load_rc ($) {
     my $rcfile = shift;
@@ -44,8 +52,8 @@ sub parse_line ($$) {
     my $rcfile = $_[1];
     if (/^\s*([^=\s]*)\s*=\s*(.*)/) {
         my ($var, $def) = ($1, $2);
-        if ($var =~ /^[-\w]+$/) {
-            die "Invalid variable definition in $rcfile, line $.: ",
+        if ($var !~ /^[-\w]+$/) {
+            die "Invalid variable name in $rcfile, line $.: ",
                 "$var\n";
         }
         my $set;
