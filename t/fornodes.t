@@ -267,7 +267,17 @@ tq1105.bar.cn
 
 
 
-=== TEST 24: ranges using '..'
+=== TEST 24: ranges with wildcards
+--- expr: {tq} * tq[1102-1104]* - tq1103*
+--- out
+tq1102.bar.cn
+tq1104.bar.cn
+--- err
+--- status: 0
+
+
+
+=== TEST 25: ranges using '..'
 --- expr: [a..c].com
 --- out
 a.com
@@ -278,7 +288,7 @@ c.com
 
 
 
-=== TEST 25: ranges using -
+=== TEST 26: ranges using -
 --- expr: [a-c].com
 --- out
 a.com
@@ -289,7 +299,7 @@ c.com
 
 
 
-=== TEST 26: more ranges
+=== TEST 27: more ranges
 --- expr: [aa-ac].com
 --- out
 aa.com
@@ -300,13 +310,25 @@ ac.com
 
 
 
-=== TEST 27: more ranges
+=== TEST 28: more ranges
 --- expr: [9-12].com
 --- out
 10.com
 11.com
 12.com
 9.com
+--- err
+--- status: 0
+
+
+
+=== TEST 29: two ranges in one pattern
+--- expr: [a-b].[1..2].com
+--- out
+a.1.com
+a.2.com
+b.1.com
+b.2.com
 --- err
 --- status: 0
 
