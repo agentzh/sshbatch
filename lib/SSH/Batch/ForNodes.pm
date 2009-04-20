@@ -262,7 +262,7 @@ Agent Zhang (agentzh) C<< <agentzh@yahoo.cn> >>
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
-Copyright (C) 2009, Agent Zhang (agentzh).
+Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
