@@ -14,7 +14,7 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout);
+my ($user, $port, $timeout, $verbose);
 my (@cmd, @exprs);
 my $fetch_value;
 for (@ARGV) {
@@ -43,6 +43,8 @@ for (@ARGV) {
             help(0);
         } elsif ($group eq 'p') {
             $fetch_value = sub { $port = shift };
+        } elsif ($group eq 'v') {
+            $verbose = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -79,8 +81,8 @@ sub help ($) {
     my $msg = <<'_EOC_';
 USAGE:
 
-atnodes [OPTIONS] COMMAND... -- HOST_PATTERN... [OPTIONS]
-atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
+    atnodes [OPTIONS] COMMAND... -- HOST_PATTERN... [OPTIONS]
+    atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
     -h            Print this help.
@@ -88,6 +90,7 @@ OPTIONS:
     -p <port>     Port for the remote SSH service.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
+    -v            Being verbose
 _EOC_
     if ($exit_code == 0) {
         print $msg;
