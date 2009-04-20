@@ -1,0 +1,27 @@
+SSH::Batch
+
+This is a Perl module for cluster operations based on Net::OpenSSH.
+
+The following scripts are provided:
+
+* fornodes
+
+    $ cat > ~/.fornodesrc
+    ps=blah.ps.com bloo.ps.com boo[2-25,26-70].ps.com
+    as=ws[1101-1105].as.com
+    $ ./fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
+    $ ./fornodes '{ps} + {as} - ws1104.as.com'
+
+* atnodes
+
+    $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
+
+* tonodes
+
+    $ tonodes /tmp/*.inst -- '{as}:/tmp/'
+    $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
+
+This module as well as its programs are licensed under the BSD License.
+
+Copyright (C) 2009 by Agent Zhang (agentzh).
+
