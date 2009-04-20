@@ -98,7 +98,13 @@ if ($list_hosts_only) {
 
 my %conns;
 for my $host (@hosts) {
-    $conns{$host} = Net::OpenSSH->new($host, async => 1);
+    $conns{$host} = Net::OpenSSH->new(
+        $host,
+        async => 1,
+        defined $timeout ? (timeout => $timeout) : (),
+        defined $user ? (user => $user) : (),
+        defined $port ? (port => $port) : (),
+    );
 }
 my (@pids, @outs);
 for my $host (@hosts) {
@@ -114,6 +120,11 @@ for my $host (@hosts) {
 
 my $i = 0;
 for my $pid (@pids) {
+    my $host = $hosts[$i++];
+    if (!defined $pid) {
+        warn "Failed to connect to host $host.\n";
+        next;
+    }
     waitpid($pid, 0);
     my $outfile = shift @outs;
     my $in;
@@ -121,7 +132,6 @@ for my $pid (@pids) {
         warn "Can't open $outfile for reading: $!\n";
         next;
     }
-    my $host = $hosts[$i++];
     print "===" x 10, " $host ", "===" x 10, "\n";
     while (<$in>) {
         print;
