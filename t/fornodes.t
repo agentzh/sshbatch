@@ -93,3 +93,66 @@ Invalid variable reference syntax: {
 --- out
 --- status: 255
 
+
+
+=== TEST 10: set +
+--- expr: {api} + {api}
+--- err
+--- out
+api01.foo.com
+api02.foo.com
+--- status: 0
+
+
+
+=== TEST 11: set -
+--- expr: {api} - {api}
+--- err
+--- out
+--- status: 0
+
+
+
+=== TEST 12: set -
+--- expr: {api} - api02*
+--- err
+--- out
+api01.foo.com
+--- status: 0
+
+
+
+=== TEST 13: set -
+--- expr: api02* - api01*
+--- err
+--- out
+api02.foo.com
+--- status: 0
+
+
+
+=== TEST 14: set -
+--- expr: api02* - {api}
+--- err
+--- out
+--- status: 0
+
+
+
+=== TEST 15: set *
+--- expr: {api} * {api}
+--- err
+--- out
+api01.foo.com
+api02.foo.com
+--- status: 0
+
+
+
+=== TEST 16: set *
+--- expr: {api} * api02*
+--- err
+--- out
+api02.foo.com
+--- status: 0
+
