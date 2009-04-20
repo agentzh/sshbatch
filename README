@@ -9,6 +9,7 @@ The following scripts are provided:
     $ cat > ~/.fornodesrc
     ps=blah.ps.com bloo.ps.com boo[2-25,26-70].ps.com
     as=ws[1101-1105].as.com
+    ^D
     $ ./fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
     $ ./fornodes '{ps} + {as} - ws1104.as.com'
 
