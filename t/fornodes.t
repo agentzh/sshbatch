@@ -235,7 +235,7 @@ api03.foo.com
 
 
 
-=== TEST 22: substraction
+=== TEST 22: subtraction
 --- expr: {api} - {tq}
 --- out
 --- err
@@ -243,7 +243,7 @@ api03.foo.com
 
 
 
-=== TEST 23: substraction (reversed)
+=== TEST 23: subtraction (reversed)
 --- expr: {tq} - {api}
 --- out
 tq1011.bar.cn
