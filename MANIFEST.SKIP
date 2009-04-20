@@ -1,0 +1,13 @@
+^tmp
+\.swp$
+~$
+^blib
+^smerge$
+^Makefile$
+\.old$
+pm_to_blib
+\.bak$
+\.git*
+po/foo\.po$
+po/meta\.po$
+
