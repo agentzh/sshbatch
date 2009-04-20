@@ -1,6 +1,6 @@
 # vi:filetype=
 
-use t::ForNodes;
+use t::fornodes;
 
 plan tests => 3 * blocks();
 

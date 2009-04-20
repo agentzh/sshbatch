@@ -1,4 +1,4 @@
-package t::ForNodes;
+package t::fornodes;
 
 use Test::Base -Base;
 use IPC::Run3 ();
