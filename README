@@ -35,14 +35,14 @@ The following scripts are provided:
     # specify a different user name and SSH server port:
     $ atnodes hostname '{ps}' -u agentz -p 12345
 
-    # if w/o SSH key
+    # use -w to prompt for password if w/o SSH key (no echo back)
     $ atnodes hostname '{ps}' -u agentz -w
 
     # or sudo required...
-    $ atnodes 'apachectl restart' '{ps}' -u agentz -w
+    $ atnodes 'sudo apachectl restart' '{ps}' -w
 
     # or specify a timeout:
-    $ atnodes 'apachectl restart' '{ps}' -t 3
+    $ atnodes 'ping foo.com' '{ps}' -t 3
 
 * tonodes (TODO)
 
