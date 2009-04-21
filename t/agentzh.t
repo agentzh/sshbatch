@@ -3,7 +3,7 @@ use warnings;
 
 #use Smart::Comments::JSON '##';
 use IPC::Run3 qw(run3);
-use List::MoreUtils qw( all );
+#use List::MoreUtils qw( all );
 
 my $should_skip;
 BEGIN {

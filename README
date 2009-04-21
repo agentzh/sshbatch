@@ -9,7 +9,7 @@ SYNOPSIS
         Expand patterns to machine host list.
 
             $ cat > ~/.fornodesrc
-            ps=blah.ps.com bloo.ps.com boo[2-25,26-70].ps.com
+            ps=blah.ps.com bloo.ps.com boo[2-25,32,41-70].ps.com
             as=ws[1101-1105].as.com
             ^D
             $ fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
@@ -41,11 +41,19 @@ SYNOPSIS
             # or specify a timeout:
             $ atnodes 'ping foo.com' '{ps}' -t 3
 
-    tonodes (TODO)
-        Transfer local files or directories to clusters.
+    tonodes
+        Upload local files/directories to remote clusters
 
             $ tonodes /tmp/*.inst -- '{as}:/tmp/'
-            $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
+            $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt
+            $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
+
+DESCRIPTION
+    This is a high-level abstraction over the powerful Net::OpenSSH module.
+    A bunch of handy scripts are provided to simplify big cluster
+    operations: fornodes, atnodes, and tonodes.
+
+    Parallel SSH communication is used to ensure minimal latency.
 
 INSTALLATION
         perl Makefile.PL
@@ -62,6 +70,9 @@ SOURCE CONTROL
         http://github.com/agentzh/sshbatch/tree/master
 
     If you have a branch for me to pull, please let me know ;)
+
+SEE ALSO
+    fornodes, atnodes, tonodes, SSH::Batch::ForNodes, Net::OpenSSH.
 
 COPYRIGHT AND LICENSE
     This module as well as its programs are licensed under the BSD License.
