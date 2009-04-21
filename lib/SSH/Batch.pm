@@ -23,7 +23,7 @@ The following scripts are provided:
 Expand patterns to machine host list.
 
     $ cat > ~/.fornodesrc
-    ps=blah.ps.com bloo.ps.com boo[2-25,26-70].ps.com
+    ps=blah.ps.com bloo.ps.com boo[2-25,32,41-70].ps.com
     as=ws[1101-1105].as.com
     ^D
     $ fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'

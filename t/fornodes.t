@@ -342,7 +342,21 @@ ac.com
 
 
 
-=== TEST 31: two ranges in one pattern
+=== TEST 31: more ranges
+--- expr: [9-10,11,12,13-14].com
+--- out
+10.com
+11.com
+12.com
+13.com
+14.com
+9.com
+--- err
+--- status: 0
+
+
+
+=== TEST 32: two ranges in one pattern
 --- expr: [a-b].[1..2].com
 --- out
 a.1.com
@@ -354,7 +368,7 @@ b.2.com
 
 
 
-=== TEST 32: bad range
+=== TEST 33: bad range
 --- expr: [a-].com
 --- err
 Bad range: [a-]
@@ -363,7 +377,7 @@ Bad range: [a-]
 
 
 
-=== TEST 33: bad range (2)
+=== TEST 34: bad range (2)
 --- expr: [a..].com
 --- err
 Bad range: [a..]
@@ -372,7 +386,7 @@ Bad range: [a..]
 
 
 
-=== TEST 34: bad range (3)
+=== TEST 35: bad range (3)
 --- expr: [].com
 --- err
 Bad range: []
@@ -381,7 +395,7 @@ Bad range: []
 
 
 
-=== TEST 35: not a bad range
+=== TEST 36: not a bad range
 --- expr: [a].com
 --- err
 --- out
@@ -390,7 +404,7 @@ a.com
 
 
 
-=== TEST 36: bug
+=== TEST 37: bug
 --- expr: foo.com *.bar.cn
 --- rc
 foo=bar
