@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 
-use Smart::Comments::JSON '##';
 use lib 'lib';
 use Net::OpenSSH;
 use Term::ReadKey;
@@ -18,8 +17,8 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout, $verbose, $ask_for_pass);
-my (@cmd, @exprs);
+my ($user, $port, $timeout, $verbose, $ask_for_pass, $recursive, $use_glob);
+my (@files, @exprs);
 my $fetch_value;
 my $found_sep;
 for (@ARGV) {
@@ -29,7 +28,7 @@ for (@ARGV) {
         next;
     }
     if ($_ eq '--') {
-        @cmd = @exprs;
+        @files = @exprs;
         @exprs = ();
         $found_sep = 1;
         next;
@@ -53,6 +52,10 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
+        } elsif ($group eq 'r') {
+            $recursive = 1;
+        } elsif ($group eq 'g') {
+            $use_glob = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -61,24 +64,39 @@ for (@ARGV) {
     push @exprs, $_;
 }
 
-if (!$found_sep && !@cmd) {
-    push @cmd, shift @exprs;
+if (!$found_sep && !@files) {
+    push @files, shift @exprs;
 }
-if (!@cmd) {
-    die "No command specified.\n";
+if (!@files) {
+    die "No local files/directories specified.\n";
+}
+
+for my $file (@files) {
+    if (!-e $file) {
+        die "Local file $file not found.\n";
+    }
 }
 
 if ($verbose) {
-    warn "Command: ", (map { "[$_]" } @cmd), "\n";
+    warn "Local files: ", (map { "[$_]" } @files), "\n";
 }
 
-if (!@exprs) {
+my $expr = join ' ', @exprs;
+my $target_path;
+if ($expr =~ s/\s*:(\D\S*)\s*$//) {
+    $target_path = $1;
+} else {
+    die "No remote target path specified.\n",
+        "  (You forgot to specify \":/path/to/target\" at the end of the command line?)\n";
+}
+
+if ($expr =~ /^\s*$/) {
     die "No cluster expression specified.\n";
 }
-my $expr = join ' ', @exprs;
 
 if ($verbose) {
     warn "Cluster expression: $expr\n";
+    warn "Target path: ", defined $target_path ? $target_path : '', "\n";
 }
 
 my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
@@ -128,20 +146,18 @@ my (@pids, @outs);
 for my $host (@hosts) {
     my ($out, $outfile) = tmpnam();
     push @outs, $outfile;
-    push @pids, $conns{$host}->system({
-        (defined $password?
-            (stdin_data => "$password\n") : (stdin_discard => 1)),
+    push @pids, $conns{$host}->scp_put({
         stdout_fh => $out,
         stderr_to_stdout => 1,
         async => 1,
-        tty => 1,
-    }, @cmd);
+        defined $recursive ? (recursive => $recursive) : (),
+        defined $use_glob ? (glob => $use_glob) : (),
+        # XXX recursive
+    }, @files, $target_path);
 }
 
-## HERE...
 my $i = 0;
 for my $pid (@pids) {
-
     my $host = $hosts[$i++];
     print "===" x 10, " $host ", "===" x 10, "\n";
     if (!defined $pid) {
@@ -151,7 +167,7 @@ for my $pid (@pids) {
     if (waitpid($pid, 0) > 0) {
         my $exit = ($? >> 8);
         if ($exit) {
-            warn "$host: Executing commands failed (status code: $exit)\n";
+            warn "$host: Transfer of files failed (status code: $exit)\n";
             next;
         }
     } else {
@@ -160,7 +176,6 @@ for my $pid (@pids) {
         next;
     }
     my $outfile = shift @outs;
-
     my $in;
     if (!open $in, $outfile) {
         warn "Can't open $outfile for reading: $!\n";
@@ -178,17 +193,19 @@ sub help ($) {
     my $msg = <<'_EOC_';
 USAGE:
 
-    atnodes [OPTIONS] COMMAND... -- HOST_PATTERN... [OPTIONS]
-    atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
+    tonodes [OPTIONS] FILE... -- HOST_PATTERN... [OPTIONS]
+    tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
+    -r            Recurse into directories too.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
+    -w            Prompt for password (used mostly for login and sudo).
 _EOC_
     if ($exit_code == 0) {
         print $msg;
@@ -202,49 +219,33 @@ __END__
 
 =head1 NAME
 
-atnodes - Run command on clusters
+tonodes - Upload local files/directories to remote clusters
 
 =head1 SYNOPSIS
 
-    # run a command on the specified servers:
-    $ atnodes $'ps -fe|grep httpd' 'ws[1101-1105].as.com'
-
-    # multiple-arg command requires "--":
-    $ atnodes ls /opt/ -- '{ps} + {as}' 'localhost'
-
-    # or use single arg command:
-    $ atnodes 'ls /opt/' '{ps} + {as}' 'localhost' # ditto
-
-    # specify a different user name and SSH server port:
-    $ atnodes hostname '{ps}' -u agentz -p 12345
-
-    # use -w to prompt for password if w/o SSH key (no echo back)
-    $ atnodes hostname '{ps}' -u agentz -w
-
-    # or prompt for password if sudo required...
-    $ atnodes 'sudo apachectl restart' '{ps}' -w
-
-    # or specify a timeout:
-    $ atnodes 'ping foo.com' '{ps}' -t 3
+    $ tonodes /tmp/*.inst -- '{as}:/tmp/'
+    $ tonodes foo.txt 'ws1105*' :/tmp/
 
 =head1 USAGE
 
-    atnodes [OPTIONS] COMMAND... -- HOST_PATTERN... [OPTIONS]
-    atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
+    tonodes [OPTIONS] FILE... -- HOST_PATTERN... [OPTIONS]
+    tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 =head1 OPTIONS
 
+    -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
+    -r            Recurse into directories too.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
+    -w            Prompt for password (used mostly for login and sudo).
 
 =head1 SEE ALSO
 
-L<fornodes>, L<tonodes>, L<SSH::Batch>, L<Net::OpenSSH>.
+L<fornodes>, L<atnodes>, L<SSH::Batch>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 

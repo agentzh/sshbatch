@@ -1,4 +1,4 @@
-package t::atnodes;
+package t::tonodes;
 
 use Test::Base -Base;
 use IPC::Run3 ();
@@ -47,7 +47,7 @@ sub run_test ($) {
         $prev_home = $ENV{HOME};
         $ENV{HOME} = '/foo/bar/baz/32rdssfsd32';
     }
-    my $cmd = ("\"$^X\" bin/atnodes $args");
+    my $cmd = ("\"$^X\" bin/tonodes $args");
     my ($in, $out, $err);
     IPC::Run3::run3 $cmd, \$in, \$out, \$err;
     if (defined $block->status) {

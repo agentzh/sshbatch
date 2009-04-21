@@ -58,12 +58,18 @@ Run command on clusters. (atnodes calls fornodes internally.)
 
 =item tonodes (TODO)
 
-Transfer local files or directories to clusters.
+Upload local files/directories to remote clusters
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
 
 =back
+
+=head1 DESCRIPTION
+
+This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, and L<tonodes>.
+
+Parallel SSH communication is used to ensure minimal latency.
 
 =head1 INSTALLATION
 
@@ -82,6 +88,10 @@ public Git repository:
     http://github.com/agentzh/sshbatch/tree/master
 
 If you have a branch for me to pull, please let me know ;)
+
+=head1 SEE ALSO
+
+L<fornodes>, L<atnodes>, L<tonodes>, L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 
