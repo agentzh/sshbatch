@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Smart::Comments::JSON '##';
+#use Smart::Comments::JSON '##';
 use lib 'lib';
 use Net::OpenSSH;
 use Term::ReadKey;
@@ -148,12 +148,9 @@ for my $pid (@pids) {
         warn "Failed to connect to host $host.\n";
         next;
     }
+    my $exit = 0;
     if (waitpid($pid, 0) > 0) {
-        my $exit = ($? >> 8);
-        if ($exit) {
-            warn "$host: Executing commands failed (status code: $exit)\n";
-            next;
-        }
+        $exit = ($? >> 8);
     } else {
         #redo if ($! == EINTR);
         warn "$host: waitpid($pid) failed: $!\n";
@@ -168,6 +165,9 @@ for my $pid (@pids) {
     }
     while (<$in>) {
         print;
+    }
+    if ($exit > 0) {
+        warn "Remote command returns status code $exit.\n";
     }
     print "\n";
     close $in;

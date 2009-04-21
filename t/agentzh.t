@@ -1,0 +1,117 @@
+use strict;
+use warnings;
+
+#use Smart::Comments::JSON '##';
+use IPC::Run3 qw(run3);
+use List::MoreUtils qw( all );
+
+my $should_skip;
+BEGIN {
+    $should_skip = ! $ENV{SSH_BATCH_TEST_AGENTZH};
+};
+use Test::More $should_skip ?
+    (skip_all => "Should only be enabled by developers.") :
+    ('no_plan');
+
+sub sh ($) {
+    my $cmd = shift;
+    if (system($cmd) != 0) {
+        die "Failed to execute $cmd. Abort.\n";
+    }
+}
+
+sub fornodes (@) {
+    my ($out, $err);
+    run3 [$^X, 'bin/fornodes', @_], \undef, \$out, \$err;
+    if ($? != 0) {
+        warn "fornodes returns non-zero status: ", $? >> 8, "\n";
+    }
+    if ($err) {
+        warn $err;
+    }
+    my @hosts = split /\n/ms, $out;
+    return \@hosts;
+}
+
+sub tonodes (@) {
+    my ($out, $err);
+    run3 [$^X, 'bin/tonodes', @_], \undef, \$out, \$err;
+    if ($? != 0) {
+        warn "tonodes returns non-zero status: ", $? >> 8, "\n";
+    }
+    if ($err) {
+        warn $err;
+    }
+    my @outs = split /^====+ [^=]+ ===+$/ms, $out;
+    shift @outs;
+    return \@outs;
+}
+
+sub atnodes (@) {
+    my ($out, $err);
+    run3 [$^X, 'bin/atnodes', @_], \undef, \$out, \$out;
+    if ($? != 0) {
+        warn "atnodes returns non-zero status: ", $? >> 8, "\n";
+    }
+    if ($err) {
+        warn $err;
+    }
+    my @outs = split /^====+ [^=]+ ===+$/ms, $out;
+    shift @outs;
+    return \@outs;
+}
+
+sub gen_local_tree () {
+    if (-d 't/tmp') {
+        sh 'rm -rf t/tmp';
+    }
+    sh 'mkdir -p t/tmp';
+    sh 'touch t/tmp/a.txt';
+    sh 'touch t/tmp/b.txt';
+    sh 'touch t/tmp/README';
+    sh 'mkdir -p t/tmp/foo/bar';
+    sh 'touch t/tmp/foo/INSTALL';
+}
+
+sub cleanup_remote_tree ($) {
+    my $count = shift;
+    my $outs = atnodes('rm -rf /tmp/tmp', '{tq}');
+    is scalar(@$outs), $count, 'all hosts generate outputs';
+    for my $out (@$outs) {
+        like $out, qr/^\s*$/, 'rm successfuly';
+    }
+    $outs = atnodes('ls /tmp/tmp', '{tq}');
+    is scalar(@$outs), $count, 'all hosts generate outputs';
+    ## outs: @$outs
+    for my $out (@$outs) {
+        is $out, "\nls: /tmp/tmp: No such file or directory\n\n",
+            'directory already removed';
+    }
+}
+
+my $hosts = fornodes('{tq}');
+my $count = @$hosts;
+ok $count > 3, "more than 3 hosts in {tq} (found $count)";
+cleanup_remote_tree($count);
+gen_local_tree();
+
+my $outs = tonodes('-r', 't/tmp', '{tq}:/tmp/');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+for my $out (@$outs) {
+    like $out, qr/^\s*$/, 'rm successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+for my $out (@$outs) {
+    is $out, "\nREADME\na.txt\nb.txt\nfoo\n\n", 'level 1 files expected';
+}
+
+$outs = atnodes('ls /tmp/tmp/foo', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\nINSTALL\nbar\n\n", 'level 1 files expected';
+}
+
