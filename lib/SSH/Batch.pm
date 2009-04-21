@@ -56,12 +56,13 @@ Run command on clusters. (atnodes calls fornodes internally.)
     # or specify a timeout:
     $ atnodes 'ping foo.com' '{ps}' -t 3
 
-=item tonodes (TODO)
+=item tonodes
 
 Upload local files/directories to remote clusters
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
-    $ tonodes /tmp/*.inst -- 'ws1105*:/tmp/'
+    $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt
+    $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
 
 =back
 
