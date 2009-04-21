@@ -1,3 +1,8 @@
+0.003
+- added the key2nodes script.
+- fixed the waitpid bug in atnodes.
+- minor doc cleanup.
+
 0.002
 - added the tonodes script.
 - more tests added.

@@ -17,6 +17,7 @@ bin/tonodes
 t/agentzh.t
 t/tonodes.pm
 t/tonodes.t
+bin/key2nodes
 bin/fornodes
 inc/Module/AutoInstall.pm
 inc/Module/Install.pm
