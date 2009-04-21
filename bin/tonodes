@@ -154,7 +154,6 @@ for my $host (@hosts) {
         stderr_to_stdout => 1,
         async => 1,
         defined $recursive ? (recursive => $recursive) : (),
-        defined $use_glob ? (glob => $use_glob) : (),
         # XXX recursive
     }, @files, $target_path);
 }
