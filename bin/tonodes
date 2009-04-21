@@ -71,9 +71,12 @@ if (!@files) {
     die "No local files/directories specified.\n";
 }
 
+if ($use_glob) {
+    @files = map glob, @files;
+}
 for my $file (@files) {
     if (!-e $file) {
-        die "Local file $file not found.\n";
+        die "Local file/directory $file not found.\n";
     }
 }
 

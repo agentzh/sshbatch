@@ -122,7 +122,7 @@ Cluster set: foo foo.com
 blah=foo
 --- out
 --- err
-Local file t/dfsd2322asdfdt not found.
+Local file/directory t/dfsd2322asdfdt not found.
 --- status: 1
 
 

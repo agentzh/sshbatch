@@ -35,7 +35,7 @@ sub fornodes (@) {
 
 sub tonodes (@) {
     my ($out, $err);
-    run3 [$^X, 'bin/tonodes', @_], \undef, \$out, \$err;
+    run3 [$^X, 'bin/tonodes', @_], \undef, \$out, \$out;
     if ($? != 0) {
         warn "tonodes returns non-zero status: ", $? >> 8, "\n";
     }
@@ -97,21 +97,76 @@ gen_local_tree();
 
 my $outs = tonodes('-r', 't/tmp', '{tq}:/tmp/');
 is scalar(@$outs), $count, 'all hosts generate outputs';
-for my $out (@$outs) {
-    like $out, qr/^\s*$/, 'rm successfuly';
-}
 
-$outs = atnodes('ls /tmp/tmp', '{tq}');
+$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
 for my $out (@$outs) {
     is $out, "\nREADME\na.txt\nb.txt\nfoo\n\n", 'level 1 files expected';
 }
 
-$outs = atnodes('ls /tmp/tmp/foo', '{tq}');
+$outs = atnodes('ls /tmp/tmp/foo|sort', '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
 
 ## outs: @$outs
 for my $out (@$outs) {
     is $out, "\nINSTALL\nbar\n\n", 'level 1 files expected';
+}
+
+cleanup_remote_tree($count);
+$outs = tonodes('t/tmp', '{tq}:/tmp/');
+for my $out (@$outs) {
+    is $out, "\n", 'transfer successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\nls: /tmp/tmp: No such file or directory\n\n", 'no -r no cp';
+}
+
+cleanup_remote_tree($count);
+
+$outs = atnodes('mkdir /tmp/tmp', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+
+$outs = tonodes('t/tmp/a.txt', 't/tmp/b.txt', '--', '{tq}', ':/tmp/tmp/');
+for my $out (@$outs) {
+    is $out, "\n\n", 'transfer successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\na.txt\nb.txt\n\n", 'only specified files uploaded';
+}
+
+cleanup_remote_tree($count);
+$outs = atnodes('mkdir /tmp/tmp', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+
+$outs = tonodes('t/tmp/*', '--', '{tq}', ':/tmp/tmp/');
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\n\n", 'transfer successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+for my $out (@$outs) {
+    is $out, "\n\n", 'no glob no files';
+}
+
+$outs = tonodes('-g', 't/tmp/*', '--', '{tq}', ':/tmp/tmp/');
+for my $out (@$outs) {
+    like $out, qr/^\s*$/s, 'transfer successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\nREADME\na.txt\nb.txt\n\n", 'only specified files uploaded';
 }
 
