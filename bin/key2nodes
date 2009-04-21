@@ -72,7 +72,7 @@ if (-f $pubkey_file) {
         warn "Found public key file $pubkey_file.\n";
     }
 } else {
-    my $cmd = "ssh-keygen -q -t rsa < /dev/null";
+    my $cmd = "(echo; echo y; echo; echo) | ssh-keygen -q -t rsa";
     if ($verbose) {
         warn "Running command [$cmd]...\n";
     }
@@ -144,7 +144,6 @@ for my $host (@hosts) {
 ## HERE...
 my $i = 0;
 for my $pid (@pids) {
-
     my $host = $hosts[$i++];
     print "===" x 10, " $host ", "===" x 10, "\n";
     if (!defined $pid) {
