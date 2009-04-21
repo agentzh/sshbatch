@@ -138,7 +138,7 @@ for my $host (@hosts) {
         stderr_to_stdout => 1,
         async => 1,
         tty => 1,
-    }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; chmod 700 ~/.ssh; fi; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
+    }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
 }
 
 ## HERE...
@@ -221,6 +221,16 @@ key2nodes - Push SSH public keys to remote clusters
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
+
+=head1 DESCRIPTION
+
+This script push local ~/.ssh/id_rsa.pub file (i.e. the SSH public key) onto the remote server's ~/.ssh/authorized_keys. It will chmod .ssh to 700 and .ssh/authorized_keys to 640.
+
+If there's no .ssh directory on the remote server, it will try to create one.
+
+Note that the sh/bash shell is assumed on the remote machines.
+
+When no ~/.ssh/id_rsa.pub file found on the local machine, it will invoke "ssh-keygen -t rsa" automatically.
 
 =head1 SEE ALSO
 
