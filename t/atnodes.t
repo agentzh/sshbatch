@@ -48,6 +48,7 @@ OPTIONS:
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
+    -ssh <path>   Specify an alternate ssh program.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
@@ -94,6 +95,7 @@ Cluster set: foo.com
 --- err
 ERROR: Option -u takes a value.
 --- status: 1
+
 
 
 === TEST 8: -ssh <prog> option
