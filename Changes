@@ -1,3 +1,6 @@
+0.005
+- updated the POD docs.
+
 0.004
 - no longer set tty => 1 explicitly to Net::OpenSSH's call.
 - implemented the set division operator.

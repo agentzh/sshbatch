@@ -9,6 +9,7 @@ our @EXPORT = qw( run_tests );
 if (!-d 't/tmp') {
     mkdir 't/tmp';
 }
+$ENV{LC_ALL} = 'en_US.UTF-8';
 $ENV{HOME} = "$FindBin::Bin/tmp";
 #warn $ENV{HOME};
 my $RcFile = $ENV{HOME} . '/.fornodesrc';
