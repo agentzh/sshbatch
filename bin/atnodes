@@ -19,6 +19,7 @@ if (!@ARGV) {
 
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass);
+my $concurrency = 100;
 my (@cmd, @exprs);
 my $fetch_value;
 my $found_sep;
@@ -54,6 +55,8 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
+        } elsif ($group eq 'c') {
+            $fetch_value = sub { $concurrency = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -119,65 +122,79 @@ if ($ask_for_pass) {
     }
 }
 
-my %conns;
-for my $host (@hosts) {
-    $conns{$host} = Net::OpenSSH->new(
-        $host,
-        async => 1,
-        defined $timeout ? (timeout => $timeout) : (),
-        defined $user ? (user => $user) : (),
-        defined $port ? (port => $port) : (),
-        defined $password ? (password => $password) : (),
-    );
-}
-my (@pids, @outs);
-for my $host (@hosts) {
-    my ($out, $outfile) = tmpnam();
-    push @outs, $outfile;
-    push @pids, $conns{$host}->system({
-        (defined $password?
-            (stdin_data => "$password\n") : (stdin_discard => 1)),
-        stdout_fh => $out,
-        stderr_to_stdout => 1,
-        async => 1,
-        #tty => 1,
-    }, @cmd);
+my (%conns, @pids, @outs);
+my %pid2host;
+my $active_count = 0;
+while (1) {
+    last if !@hosts && !@pids;
+    my @active_hosts;
+    while ($active_count < $concurrency) {
+        last if !@hosts;
+        my $host = shift @hosts;
+        $active_count++;
+        $conns{$host} = Net::OpenSSH->new(
+            $host,
+            async => 1,
+            defined $timeout ? (timeout => $timeout) : (),
+            defined $user ? (user => $user) : (),
+            defined $port ? (port => $port) : (),
+            defined $password ? (password => $password) : (),
+        );
+        push @active_hosts, $host;
+    }
+    for my $host (@active_hosts) {
+        my ($out, $outfile) = tmpnam();
+        push @outs, $outfile;
+        my $pid = $conns{$host}->system({
+            (defined $password?
+                (stdin_data => "$password\n") : (stdin_discard => 1)),
+            stdout_fh => $out,
+            stderr_to_stdout => 1,
+            async => 1,
+            #tty => 1,
+        }, @cmd);
+        push @pids, $pid;
+        $pid2host{$pid} = $host;
+    }
+    if (@pids) {
+        my $pid = shift @pids;
+        my $host = delete $pid2host{$pid};
+        print "===" x 10, " $host ", "===" x 10, "\n";
+        if (!defined $pid) {
+            warn "Failed to connect to host $host.\n";
+            next;
+        }
+        my $exit = 0;
+        my $ret = waitpid($pid, 0);
+        $active_count--;
+        delete $conns{$host};
+        if ($ret > 0) {
+            $exit = ($? >> 8);
+        } else {
+            #redo if ($! == EINTR);
+            warn "$host: waitpid($pid) failed: $!\n";
+            next;
+        }
+
+        my $outfile = shift @outs;
+
+        my $in;
+        if (!open $in, $outfile) {
+            warn "Can't open $outfile for reading: $!\n";
+            next;
+        }
+        while (<$in>) {
+            print;
+        }
+        if ($exit > 0) {
+            warn "Remote command returns status code $exit.\n";
+        }
+        print "\n";
+        close $in;
+    }
 }
 
 ## HERE...
-my $i = 0;
-for my $pid (@pids) {
-
-    my $host = $hosts[$i++];
-    print "===" x 10, " $host ", "===" x 10, "\n";
-    if (!defined $pid) {
-        warn "Failed to connect to host $host.\n";
-        next;
-    }
-    my $exit = 0;
-    if (waitpid($pid, 0) > 0) {
-        $exit = ($? >> 8);
-    } else {
-        #redo if ($! == EINTR);
-        warn "$host: waitpid($pid) failed: $!\n";
-        next;
-    }
-    my $outfile = shift @outs;
-
-    my $in;
-    if (!open $in, $outfile) {
-        warn "Can't open $outfile for reading: $!\n";
-        next;
-    }
-    while (<$in>) {
-        print;
-    }
-    if ($exit > 0) {
-        warn "Remote command returns status code $exit.\n";
-    }
-    print "\n";
-    close $in;
-}
 
 sub help ($) {
     my $exit_code = shift;
@@ -188,6 +205,7 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -c <num>      Set SSH concurrency limit.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
@@ -240,6 +258,7 @@ atnodes - Run command on clusters
 
 =head1 OPTIONS
 
+    -c <num>      Set SSH concurrency limit.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
