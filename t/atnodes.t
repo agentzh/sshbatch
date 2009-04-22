@@ -95,3 +95,14 @@ Cluster set: foo.com
 ERROR: Option -u takes a value.
 --- status: 1
 
+
+=== TEST 8: -ssh <prog> option
+--- args: -ssh foo ls foo.com -l -v
+--- out
+--- err
+Command: [ls]
+Using SSH program [foo].
+Cluster expression: foo.com
+Cluster set: foo.com
+--- status: 0
+
