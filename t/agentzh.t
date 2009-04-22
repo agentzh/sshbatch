@@ -128,10 +128,12 @@ for my $out (@$outs) {
 }
 
 cleanup_remote_tree($count);
-$outs = tonodes('t/tmp', '{tq}:/tmp/');
+
+$outs = tonodes('t/tmp', '{tq}:/tmp/', '-v');
 for my $out (@$outs) {
     is $out, "\n", 'transfer successfuly';
 }
+exit;
 
 $outs = atnodes('ls /tmp/tmp', '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
@@ -173,7 +175,7 @@ for my $out (@$outs) {
     is $out, "\n\n", 'no glob no files';
 }
 
-$outs = tonodes('-g', 't/tmp/*', '--', '{tq}', ':/tmp/tmp/');
+$outs = tonodes('-g', 't/tmp/*', '--', '{tq}', ':/tmp/tmp/', '-c', 2, '-v');
 for my $out (@$outs) {
     like $out, qr/^\s*$/s, 'transfer successfuly';
 }

@@ -44,6 +44,7 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
@@ -140,6 +141,7 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
@@ -166,13 +168,23 @@ ERROR: Option -u takes a value.
 
 
 === TEST 12: rsync
---- args: t foo.com:/tmp/ -rsync -l -v
+--- args: t/tonodes.t foo.com:/tmp/ -rsync -l -v
 --- err
 Using Rsync method.
-Local files: [t]
+Local files: [t/tonodes.t]
 Cluster expression: foo.com
 Target path: /tmp/
 Cluster set: foo.com
 --- out
 --- status: 0
+
+
+
+=== TEST 13: skipping directories w/o -r
+--- args: t foo.com:~
+--- err
+Warning: Skipped directory t.
+ERROR: No files to be transferred.
+--- out
+--- status: 1
 

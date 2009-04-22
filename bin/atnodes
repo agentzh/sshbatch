@@ -159,16 +159,19 @@ while (1) {
     if (@pids) {
         my $pid = shift @pids;
         my $host = delete $pid2host{$pid};
+        $active_count--;
         print "===" x 10, " $host ", "===" x 10, "\n";
         if (!defined $pid) {
             warn "Failed to connect to host $host.\n";
+            delete $conns{$host};
             next;
         }
         my $exit = 0;
         my $ret = waitpid($pid, 0);
         $exit = ($? >> 8);
-        $active_count--;
+
         delete $conns{$host};
+
         unless ($ret > 0) {
             #redo if ($! == EINTR);
             warn "$host: waitpid($pid) failed: $!\n";
@@ -204,7 +207,7 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
-    -c <num>      Set SSH concurrency limit.
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.

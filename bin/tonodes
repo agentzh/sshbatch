@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+#use Smart::Comments::JSON '##';
 use lib 'lib';
 use Net::OpenSSH;
 use Term::ReadKey;
@@ -19,6 +20,7 @@ if (!@ARGV) {
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass, $recursive, $use_glob);
 my ($bwlimit, $use_rsync);
+my $concurrency = 20;
 my (@files, @exprs);
 my $fetch_value;
 my $found_sep;
@@ -35,7 +37,7 @@ for (@ARGV) {
         $found_sep = 1;
         next;
     }
-    if (/^-([A-Za-z].*)/) {
+    if (/^-(.+)/) {
         my $group = $1;
         if ($group eq 'l') {
             $list_hosts_only = 1;
@@ -59,6 +61,8 @@ for (@ARGV) {
             $fetch_value = sub { $bwlimit = shift };
         } elsif ($group eq 'rsync') {
             $use_rsync = 1;
+        } elsif ($group eq 'c') {
+            $fetch_value = sub { $concurrency = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -81,9 +85,23 @@ if (!@files) {
 if ($use_glob) {
     @files = map glob, @files;
 }
+
+my $changed = 0;
 for my $file (@files) {
     if (!-e $file) {
         die "Local file/directory $file not found.\n";
+    }
+    if (!$recursive && -d $file) {
+        warn "Warning: Skipped directory $file.\n";
+        undef $file;
+        $changed = 1;
+    }
+}
+
+if ($changed) {
+    @files = grep { defined $_ } @files;
+    if (!@files) {
+        die "ERROR: No files to be transferred.\n";
     }
 }
 
@@ -142,62 +160,82 @@ if ($ask_for_pass) {
     }
 }
 
-my %conns;
-for my $host (@hosts) {
-    $conns{$host} = Net::OpenSSH->new(
-        $host,
-        async => 1,
-        defined $timeout ? (timeout => $timeout) : (),
-        defined $user ? (user => $user) : (),
-        defined $port ? (port => $port) : (),
-        defined $password ? (password => $password) : (),
-    );
-}
-my (@pids, @outs);
-for my $host (@hosts) {
-    my ($out, $outfile) = tmpnam();
-    push @outs, $outfile;
-    my $meth = $use_rsync ? 'rsync_put' : 'scp_put';
-    push @pids, $conns{$host}->$meth({
-        stdout_fh => $out,
-        stderr_to_stdout => 1,
-        async => 1,
-        defined $recursive ? (recursive => $recursive) : (),
-        defined $bwlimit ? (bwlimit => $bwlimit) : (),
-        # XXX recursive
-    }, @files, $target_path);
-}
-
-my $i = 0;
-for my $pid (@pids) {
-    my $host = $hosts[$i++];
-    print "===" x 10, " $host ", "===" x 10, "\n";
-    if (!defined $pid) {
-        warn "Failed to connect to host $host.\n";
-        next;
+my (%conns, @pids, @outs);
+my %pid2host;
+my $active_count = 0;
+while (1) {
+    last if !@hosts && !@pids;
+    my @active_hosts;
+    while ($active_count < $concurrency) {
+        last if !@hosts;
+        my $host = shift @hosts;
+        $active_count++;
+        ## connecting to host: $host
+        $conns{$host} = Net::OpenSSH->new(
+            $host,
+            async => 1,
+            defined $timeout ? (timeout => $timeout) : (),
+            defined $user ? (user => $user) : (),
+            defined $port ? (port => $port) : (),
+            defined $password ? (password => $password) : (),
+        );
+        push @active_hosts, $host;
     }
-    if (waitpid($pid, 0) > 0) {
-        my $exit = ($? >> 8);
-        if ($exit) {
-            warn "$host: Transfer of files failed (status code: $exit)\n";
+    for my $host (@active_hosts) {
+        my ($out, $outfile) = tmpnam();
+        push @outs, $outfile;
+        my $meth = $use_rsync ? 'rsync_put' : 'scp_put';
+
+        ## starting transfer to host: $host
+        my $pid = $conns{$host}->$meth({
+            stdout_fh => $out,
+            stderr_to_stdout => 1,
+            async => 1,
+            defined $recursive ? (recursive => $recursive) : (),
+            defined $bwlimit ? (bwlimit => $bwlimit) : (),
+            # XXX recursive
+        }, @files, $target_path);
+        push @pids, $pid;
+        $pid2host{$pid} = $host;
+    }
+    if (@pids) {
+        my $pid = shift @pids;
+        my $host = delete $pid2host{$pid};
+        $active_count--;
+        ## waiting transfer to host: $host
+        print "===" x 10, " $host ", "===" x 10, "\n";
+        if (!defined $pid) {
+            warn "Failed to connect to host $host.\n";
+            delete $conns{$host};
             next;
         }
-    } else {
-        #redo if ($! == EINTR);
-        warn "$host: waitpid($pid) failed: $!\n";
-        next;
+        my $ret = waitpid($pid, 0);
+        my $exit = ($? >> 8);
+
+        delete $conns{$host};
+
+        if ($ret > 0) {
+            if ($exit > 0) {
+                warn "$host: Transfer of files failed (status code: $exit)\n";
+                next;
+            }
+        } else {
+            #redo if ($! == EINTR);
+            warn "$host: waitpid($pid) failed: $!\n";
+            next;
+        }
+        my $outfile = shift @outs;
+        my $in;
+        if (!open $in, $outfile) {
+            warn "Can't open $outfile for reading: $!\n";
+            next;
+        }
+        while (<$in>) {
+            print;
+        }
+        print "\n";
+        close $in;
     }
-    my $outfile = shift @outs;
-    my $in;
-    if (!open $in, $outfile) {
-        warn "Can't open $outfile for reading: $!\n";
-        next;
-    }
-    while (<$in>) {
-        print;
-    }
-    print "\n";
-    close $in;
 }
 
 sub help ($) {
@@ -209,6 +247,7 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
@@ -254,6 +293,7 @@ tonodes - Upload local files/directories to remote clusters
 
 =head1 OPTIONS
 
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -b            bandwidth limit, specified in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
