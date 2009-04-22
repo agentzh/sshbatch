@@ -166,11 +166,10 @@ while (1) {
         }
         my $exit = 0;
         my $ret = waitpid($pid, 0);
+        $exit = ($? >> 8);
         $active_count--;
         delete $conns{$host};
-        if ($ret > 0) {
-            $exit = ($? >> 8);
-        } else {
+        unless ($ret > 0) {
             #redo if ($! == EINTR);
             warn "$host: waitpid($pid) failed: $!\n";
             next;

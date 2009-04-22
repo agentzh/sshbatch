@@ -84,7 +84,7 @@ sub cleanup_remote_tree ($) {
     is scalar(@$outs), $count, 'all hosts generate outputs';
     ## outs: @$outs
     for my $out (@$outs) {
-        is $out, "\nls: /tmp/tmp: No such file or directory\n\n",
+        is $out, "\nRemote command returns status code 1.\nls: /tmp/tmp: No such file or directory\n\n",
             'directory already removed';
     }
 }
@@ -137,7 +137,7 @@ $outs = atnodes('ls /tmp/tmp', '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
 ## outs: @$outs
 for my $out (@$outs) {
-    is $out, "\nls: /tmp/tmp: No such file or directory\n\n", 'no -r no cp';
+    is $out, "\nRemote command returns status code 1.\nls: /tmp/tmp: No such file or directory\n\n", 'no -r no cp';
 }
 
 cleanup_remote_tree($count);
@@ -178,7 +178,7 @@ for my $out (@$outs) {
     like $out, qr/^\s*$/s, 'transfer successfuly';
 }
 
-$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
+$outs = atnodes('ls /tmp/tmp|sort', '-c', 2, '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
 ## outs: @$outs
 for my $out (@$outs) {

@@ -1,3 +1,6 @@
+0.007
+- added -c <concurrency> option to atnodes and it has default SSH concurrency limit of 20.
+
 0.006
 - fixed a bug in multiline expression handling in ~/.fornodesrc parsing.
 - added multi-line expression samples to the POD docs.
