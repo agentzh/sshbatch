@@ -88,7 +88,7 @@ sub parse_expr ($) {
     local *_ = \($_[0]);
     my @toplevel;
     while (1) {
-        if (/\G \s* (?<= [\}\)\s] ) ([-+*]) (?= [\{\(\s] ) \s*/gcx) {
+        if (/\G \s* (?<= [\}\)\s] ) ([-+*\/]) (?= [\{\(\s] ) \s*/gcx) {
             push @toplevel, $1;
         } elsif (/\G \{ .*? \} /gcx) {
             push @toplevel, $&;
@@ -104,7 +104,7 @@ sub parse_expr ($) {
     for my $raw_op (@toplevel) { # op would be either operands or operators
         my $op = $raw_op;
 
-        if ($op =~ /^[-+*]$/) {
+        if ($op =~ /^[-+*\/]$/) {
             if ($expect_term) {
                 die "Expecting terms but found operator $op.\n";
             }
@@ -122,21 +122,43 @@ sub parse_expr ($) {
             die $@;
         }
     }
+    my @lower;
     while (@toplevel > 1) {
         my $a = shift @toplevel;
         my $op = shift @toplevel;
-        my $b = shift @toplevel;
         if ($op eq '+') {
-            unshift @toplevel, $a + $b;
+            push @lower, $a, $op;
+            #unshift @toplevel, $a + $b;
         } elsif ($op eq '-') {
-            unshift @toplevel, $a - $b;
+            push @lower, $a, $op;
+            #unshift @toplevel, $a - $b;
         } elsif ($op eq '*') {
+            my $b = shift @toplevel;
             unshift @toplevel, $a * $b;
+        } elsif ($op eq '/') {
+            my $b = shift @toplevel;
+            unshift @toplevel, $a / $b;
         } else {
             die "Invalid operator : [$op]\n";
         }
     }
-    return @toplevel ? $toplevel[0] : Set::Scalar->new;
+    if (@toplevel) {
+        push @lower, @toplevel;
+    }
+    while (@lower > 1) {
+        my $a = shift @lower;
+        my $op = shift @lower;
+        my $b = shift @lower;
+
+        if ($op eq '+') {
+            unshift @lower, $a + $b;
+        } elsif ($op eq '-') {
+            unshift @lower, $a - $b;
+        } else {
+            die "Unexpected operator: [$op]\n";
+        }
+    }
+    return @lower ? $lower[0] : Set::Scalar->new;
 }
 
 sub parse_term ($) {

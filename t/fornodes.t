@@ -413,3 +413,31 @@ foo.com
 --- err
 --- status: 0
 
+
+
+=== TEST 38: operator precedence
+--- expr: {A}-{B}*{C}
+--- rc
+A=a b c
+B=b
+C=c
+--- out
+a
+b
+c
+--- err
+--- status: 0
+
+
+
+=== TEST 39: set division
+--- expr: {A}/{B}
+--- rc
+A=a b c
+B=b c d
+--- out
+a
+d
+--- err
+--- status: 0
+
