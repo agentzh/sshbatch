@@ -19,7 +19,7 @@ if (!@ARGV) {
 
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass);
-my $concurrency = 100;
+my $concurrency = 20;
 my (@cmd, @exprs);
 my $fetch_value;
 my $found_sep;
@@ -258,7 +258,7 @@ atnodes - Run command on clusters
 
 =head1 OPTIONS
 
-    -c <num>      Set SSH concurrency limit.
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
