@@ -1,3 +1,7 @@
+0.006
+- fixed a bug in multiline expression handling in ~/.fornodesrc parsing.
+- added multi-line expression samples to the POD docs.
+
 0.005
 - updated the POD docs.
 - fixed the bogus test failures on machines with a different locale.
