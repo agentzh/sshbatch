@@ -1,5 +1,6 @@
 0.005
 - updated the POD docs.
+- fixed the bogus test failures on machines with a different locale.
 
 0.004
 - no longer set tty => 1 explicitly to Net::OpenSSH's call.
