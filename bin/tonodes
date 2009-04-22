@@ -241,6 +241,10 @@ tonodes - Upload local files/directories to remote clusters
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt
+
+    # use rsync instead of scp:
+    $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt -rsync
+
     $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
 
 =head1 USAGE
@@ -263,7 +267,7 @@ tonodes - Upload local files/directories to remote clusters
 
 =head1 SEE ALSO
 
-L<fornodes>, L<atnodes>, L<SSH::Batch>, L<Net::OpenSSH>.
+L<fornodes>, L<atnodes>, L<SSH::Batch>, L<key2nodes>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 

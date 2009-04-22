@@ -55,6 +55,9 @@ DESCRIPTION
 
     Parallel SSH communication is used to ensure minimal latency.
 
+TODO
+    *   Add a "-c" option to the scripts to limit ssh concurrency level.
+
 INSTALLATION
         perl Makefile.PL
         make

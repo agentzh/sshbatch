@@ -25,7 +25,10 @@ Expand patterns to machine host list.
     $ cat > ~/.fornodesrc
     ps=blah.ps.com bloo.ps.com boo[2-25,32,41-70].ps.com
     as=ws[1101-1105].as.com
+    # use set operations to define new sets:
+    foo={ps} + {ps} * {as} - {ps} / {as}
     ^D
+
     $ fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
     $ fornodes 'tq[ab-ac].[1101-1105].foo.com'
     $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
@@ -62,13 +65,23 @@ Upload local files/directories to remote clusters
 
     $ tonodes /tmp/*.inst -- '{as}:/tmp/'
     $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt
+
+    # use rsync instead of scp:
+    $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt -rsync
+
     $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
+
+=item key2nodes
+
+Push the SSH public key (or generate one if not any) to the remote clusters.
+
+    $ key2nodes 'ws[1101-1105].as.com'
 
 =back
 
 =head1 DESCRIPTION
 
-This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, and L<tonodes>.
+This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, L<tonodes>, and L<key2nodes>.
 
 Parallel SSH communication is used to ensure minimal latency.
 
@@ -102,7 +115,8 @@ If you have a branch for me to pull, please let me know ;)
 
 =head1 SEE ALSO
 
-L<fornodes>, L<atnodes>, L<tonodes>, L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
+L<fornodes>, L<atnodes>, L<tonodes>, L<key2nodes>,
+L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 

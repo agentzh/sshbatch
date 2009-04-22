@@ -28,11 +28,18 @@ fornodes - Expand patterns to machine host list.
     $ cat > ~/.fornodesrc
     ps=blah.ps.com bloo.ps.com boo[2-25,32,41-70].ps.com
     as=ws[1101-1105].as.com
+    # use set operations to define new sets:
+    foo={ps} + {ps} * {as} - {ps} / {as}
     ^D
+
     $ fornodes 'api[02-10].foo.bar.com' 'boo*.ps.com'
     $ fornodes 'tq[ab-ac].[1101-1105].foo.com'
     $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
     $ fornodes '{ps} * {as}'  # set intersect
+
+=head1 SEE ALSO
+
+L<key2nodes>, L<atnodes>, L<tonodes>, L<SSH::Batch>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 

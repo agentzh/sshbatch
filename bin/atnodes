@@ -250,7 +250,7 @@ atnodes - Run command on clusters
 
 =head1 SEE ALSO
 
-L<fornodes>, L<tonodes>, L<SSH::Batch>, L<Net::OpenSSH>.
+L<fornodes>, L<tonodes>, L<key2nodes>, L<SSH::Batch>, L<Net::OpenSSH>.
 
 =head1 COPYRIGHT AND LICENSE
 
