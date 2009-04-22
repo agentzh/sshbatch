@@ -1,3 +1,6 @@
+0.008
+- added -ssh <path> option to atnodes.
+
 0.007
 - added -c <concurrency> option to atnodes/tonodes/key2nodes and it has the
   default SSH concurrency limit of 20.
