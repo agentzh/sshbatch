@@ -20,7 +20,7 @@ if (!@ARGV) {
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass);
 my $concurrency = 20;
-my (@cmd, @exprs);
+my (@cmd, @exprs, $ssh_cmd);
 my $fetch_value;
 my $found_sep;
 my $last_option;
@@ -36,10 +36,7 @@ for (@ARGV) {
         $found_sep = 1;
         next;
     }
-    if (/^-([A-Za-z])(.*)/) {
-        if ($2 ne '') {
-            die "Unknown option: $_\n";
-        }
+    if (/^-(.*)/) {
         my $group = $1;
         if ($group eq 'l') {
             $list_hosts_only = 1;
@@ -57,6 +54,8 @@ for (@ARGV) {
             $ask_for_pass = 1;
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
+        } elsif ($group eq 'ssh') {
+            $fetch_value = sub { $ssh_cmd = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -138,6 +137,7 @@ while (1) {
             defined $user ? (user => $user) : (),
             defined $port ? (port => $port) : (),
             defined $password ? (password => $password) : (),
+            defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
         );
         push @active_hosts, $host;
     }
