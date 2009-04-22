@@ -137,7 +137,7 @@ for my $host (@hosts) {
         stdout_fh => $out,
         stderr_to_stdout => 1,
         async => 1,
-        tty => 1,
+        #tty => 1,
     }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
 }
 

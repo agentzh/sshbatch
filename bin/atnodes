@@ -134,7 +134,7 @@ for my $host (@hosts) {
         stdout_fh => $out,
         stderr_to_stdout => 1,
         async => 1,
-        tty => 1,
+        #tty => 1,
     }, @cmd);
 }
 
