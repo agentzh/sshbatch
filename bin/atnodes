@@ -22,6 +22,7 @@ my ($user, $port, $timeout, $verbose, $ask_for_pass);
 my (@cmd, @exprs);
 my $fetch_value;
 my $found_sep;
+my $last_option;
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -56,10 +57,15 @@ for (@ARGV) {
         } else {
             die "Unknown option: $_\n";
         }
+        $last_option = $_;
         next;
     }
     push @exprs, $_;
 }
+if (defined $fetch_value) {
+    die "ERROR: Option $last_option takes a value.\n";
+}
+
 
 if (!$found_sep && !@cmd) {
     push @cmd, shift @exprs;

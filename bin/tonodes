@@ -18,10 +18,11 @@ if (!@ARGV) {
 
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass, $recursive, $use_glob);
-my $bwlimit;
+my ($bwlimit, $use_rsync);
 my (@files, @exprs);
 my $fetch_value;
 my $found_sep;
+my $last_option;
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -34,10 +35,7 @@ for (@ARGV) {
         $found_sep = 1;
         next;
     }
-    if (/^-([A-Za-z])(.*)/) {
-        if ($2 ne '') {
-            die "Unknown option: $_\n";
-        }
+    if (/^-([A-Za-z].*)/) {
         my $group = $1;
         if ($group eq 'l') {
             $list_hosts_only = 1;
@@ -59,12 +57,18 @@ for (@ARGV) {
             $use_glob = 1;
         } elsif ($group eq 'b') {
             $fetch_value = sub { $bwlimit = shift };
+        } elsif ($group eq 'rsync') {
+            $use_rsync = 1;
         } else {
             die "Unknown option: $_\n";
         }
+        $last_option = $_;
         next;
     }
     push @exprs, $_;
+}
+if (defined $fetch_value) {
+    die "ERROR: Option $last_option takes a value.\n";
 }
 
 if (!$found_sep && !@files) {
@@ -84,6 +88,7 @@ for my $file (@files) {
 }
 
 if ($verbose) {
+    warn "Using ", $use_rsync ? 'Rsync' : 'Scp', " method.\n";
     warn "Local files: ", (map { "[$_]" } @files), "\n";
 }
 
@@ -152,7 +157,8 @@ my (@pids, @outs);
 for my $host (@hosts) {
     my ($out, $outfile) = tmpnam();
     push @outs, $outfile;
-    push @pids, $conns{$host}->scp_put({
+    my $meth = $use_rsync ? 'rsync_put' : 'scp_put';
+    push @pids, $conns{$host}->$meth({
         stdout_fh => $out,
         stderr_to_stdout => 1,
         async => 1,
@@ -209,6 +215,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
+    -rsync        Use "rsync" to transfer files.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.

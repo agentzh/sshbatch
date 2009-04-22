@@ -44,11 +44,13 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
+    -rsync        Use "rsync" to transfer files.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
@@ -94,6 +96,7 @@ No remote target path specified.
 blah=foo
 --- out
 --- err
+Using Scp method.
 Local files: [t/tonodes.t]
 Cluster expression: foo.com *foo
 Target path: ~
@@ -108,6 +111,7 @@ Cluster set: foo foo.com
 blah=foo
 --- out
 --- err
+Using Scp method.
 Local files: [t/tonodes.t]
 Cluster expression: foo.com *foo
 Target path: ~
@@ -136,15 +140,39 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
+    -rsync        Use "rsync" to transfer files.
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used mostly for login and sudo).
 --- err
+--- status: 0
+
+
+
+=== TEST 11: option takes a value error
+--- args: t foo.com '*foo' :~ -u
+--- out
+--- err
+ERROR: Option -u takes a value.
+--- status: 1
+
+
+
+=== TEST 12: rsync
+--- args: t foo.com:/tmp/ -rsync -l -v
+--- err
+Using Rsync method.
+Local files: [t]
+Cluster expression: foo.com
+Target path: /tmp/
+Cluster set: foo.com
+--- out
 --- status: 0
 

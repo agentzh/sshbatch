@@ -92,10 +92,25 @@ sub cleanup_remote_tree ($) {
 my $hosts = fornodes('{tq}');
 my $count = @$hosts;
 ok $count > 3, "more than 3 hosts in {tq} (found $count)";
+
+cleanup_remote_tree($count);
+my $outs = tonodes('-r', '-rsync', 't/tmp', '--', '{tq}', ':/tmp/');
+for my $out (@$outs) {
+    is $out, "\n\n", 'transfer successfuly';
+}
+
+$outs = atnodes('ls /tmp/tmp|sort', '{tq}');
+is scalar(@$outs), $count, 'all hosts generate outputs';
+## outs: @$outs
+for my $out (@$outs) {
+    is $out, "\nREADME\na.txt\nb.txt\nfoo\n\n",
+        'only specified files uploaded';
+}
+
 cleanup_remote_tree($count);
 gen_local_tree();
 
-my $outs = tonodes('-r', 't/tmp', '{tq}:/tmp/');
+$outs = tonodes('-r', 't/tmp', '{tq}:/tmp/');
 is scalar(@$outs), $count, 'all hosts generate outputs';
 
 $outs = atnodes('ls /tmp/tmp|sort', '{tq}');
@@ -169,4 +184,5 @@ is scalar(@$outs), $count, 'all hosts generate outputs';
 for my $out (@$outs) {
     is $out, "\nREADME\na.txt\nb.txt\n\n", 'only specified files uploaded';
 }
+
 

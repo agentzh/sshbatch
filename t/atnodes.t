@@ -85,3 +85,12 @@ Cluster expression: foo.com *.bar.cn
 Cluster set: foo.com
 --- status: 0
 
+
+
+=== TEST 7: option takes a value error
+--- args: ls foo.com -u
+--- out
+--- err
+ERROR: Option -u takes a value.
+--- status: 1
+
