@@ -69,7 +69,6 @@ if (defined $fetch_value) {
     die "ERROR: Option $last_option takes a value.\n";
 }
 
-
 if (!$found_sep && !@cmd) {
     push @cmd, shift @exprs;
 }

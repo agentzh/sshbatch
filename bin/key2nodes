@@ -20,6 +20,7 @@ if (!@ARGV) {
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose);
 my (@exprs);
+my $concurrency = 20;
 my $fetch_value;
 for (@ARGV) {
     if (defined $fetch_value) {
@@ -44,6 +45,8 @@ for (@ARGV) {
             $fetch_value = sub { $port = shift };
         } elsif ($group eq 'v') {
             $verbose = 1;
+        } elsif ($group eq 'c') {
+            $fetch_value = sub { $concurrency = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -116,63 +119,82 @@ if (!$password) {
     die "No password specified.\n";
 }
 
-my %conns;
-for my $host (@hosts) {
-    $conns{$host} = Net::OpenSSH->new(
-        $host,
-        async => 1,
-        defined $timeout ? (timeout => $timeout) : (),
-        defined $user ? (user => $user) : (),
-        defined $port ? (port => $port) : (),
-        password => $password,
-    );
-}
+my (%conns, @pids, @outs);
+my %pid2host;
+my $active_count = 0;
+while (1) {
+    last if !@hosts && !@pids;
+    my @active_hosts;
+    while ($active_count < $concurrency) {
+        last if !@hosts;
+        my $host = shift @hosts;
+        $active_count++;
+        $conns{$host} = Net::OpenSSH->new(
+            $host,
+            async => 1,
+            defined $timeout ? (timeout => $timeout) : (),
+            defined $user ? (user => $user) : (),
+            defined $port ? (port => $port) : (),
+            password => $password,
+        );
+        push @active_hosts, $host;
+    }
 
-my (@pids, @outs);
-for my $host (@hosts) {
-    my ($out, $outfile) = tmpnam();
-    push @outs, $outfile;
-    push @pids, $conns{$host}->system({
-        stdin_data => $pubkey,
-        stdout_fh => $out,
-        stderr_to_stdout => 1,
-        async => 1,
-        #tty => 1,
-    }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
-}
+    for my $host (@active_hosts) {
+        my ($out, $outfile) = tmpnam();
+        push @outs, $outfile;
+        my $pid = $conns{$host}->system({
+            stdin_data => $pubkey,
+            stdout_fh => $out,
+            stderr_to_stdout => 1,
+            async => 1,
+            #tty => 1,
+        }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
+        push @pids, $pid;
+        $pid2host{$pid} = $host;
+    }
 
 ## HERE...
-my $i = 0;
-for my $pid (@pids) {
-    my $host = $hosts[$i++];
-    print "===" x 10, " $host ", "===" x 10, "\n";
-    if (!defined $pid) {
-        warn "Failed to connect to host $host.\n";
-        next;
-    }
-    my $exit = 0;
-    if (waitpid($pid, 0) > 0) {
-        $exit = ($? >> 8);
-    } else {
-        #redo if ($! == EINTR);
-        warn "$host: waitpid($pid) failed: $!\n";
-        next;
-    }
-    my $outfile = shift @outs;
 
-    my $in;
-    if (!open $in, $outfile) {
-        warn "Can't open $outfile for reading: $!\n";
-        next;
+    if (@pids) {
+        my $pid = shift @pids;
+        my $host = delete $pid2host{$pid};
+        $active_count--;
+        print "===" x 10, " $host ", "===" x 10, "\n";
+        if (!defined $pid) {
+            warn "Failed to connect to host $host.\n";
+            delete $conns{$host};
+            next;
+        }
+        my $exit = 0;
+        my $ret = waitpid($pid, 0);
+        if ($ret > 0) {
+            $exit = ($? >> 8);
+        } else {
+            #redo if ($! == EINTR);
+            warn "$host: waitpid($pid) failed: $!\n";
+            delete $conns{$host};
+            next;
+        }
+
+        delete $conns{$host};
+
+        my $outfile = shift @outs;
+
+        my $in;
+        if (!open $in, $outfile) {
+            warn "Can't open $outfile for reading: $!\n";
+            next;
+        }
+        while (<$in>) {
+            print;
+        }
+        if ($exit > 0) {
+            warn "Remote command returns status code $exit.\n";
+        }
+        print "\n";
+        close $in;
     }
-    while (<$in>) {
-        print;
-    }
-    if ($exit > 0) {
-        warn "Remote command returns status code $exit.\n";
-    }
-    print "\n";
-    close $in;
 }
 
 sub help ($) {
@@ -183,6 +205,7 @@ USAGE:
     key2nodes [OPTIONS] HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
@@ -215,6 +238,7 @@ key2nodes - Push SSH public keys to remote clusters
 
 =head1 OPTIONS
 
+    -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
