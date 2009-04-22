@@ -441,3 +441,17 @@ d
 --- err
 --- status: 0
 
+
+
+=== TEST 40: single-line comments in rc
+--- expr: {A}
+--- rc
+#howdy
+
+A=a c
+--- out
+a
+c
+--- err
+--- status: 0
+
