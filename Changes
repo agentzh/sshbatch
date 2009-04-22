@@ -1,5 +1,9 @@
 0.004
-- no longer set tty => 1 explicitly.
+- no longer set tty => 1 explicitly to Net::OpenSSH's call.
+- implemented the set division operator.
+- now we consider set opeartor precedence.
+- added -rsync option to tonodes to use "rsync" rather than the default "scp".
+- added -b <num> option to limit transfer bandwidth.
 
 0.003
 - added the key2nodes script.
