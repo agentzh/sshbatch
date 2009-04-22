@@ -18,6 +18,7 @@ if (!@ARGV) {
 
 my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass, $recursive, $use_glob);
+my $bwlimit;
 my (@files, @exprs);
 my $fetch_value;
 my $found_sep;
@@ -56,6 +57,8 @@ for (@ARGV) {
             $recursive = 1;
         } elsif ($group eq 'g') {
             $use_glob = 1;
+        } elsif ($group eq 'b') {
+            $fetch_value = sub { $bwlimit = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -154,6 +157,7 @@ for my $host (@hosts) {
         stderr_to_stdout => 1,
         async => 1,
         defined $recursive ? (recursive => $recursive) : (),
+        defined $bwlimit ? (bwlimit => $bwlimit) : (),
         # XXX recursive
     }, @files, $target_path);
 }
@@ -199,6 +203,7 @@ USAGE:
     tonodes [OPTIONS] FILE HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
+    -b <num>      bandwidth limit in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
@@ -238,6 +243,7 @@ tonodes - Upload local files/directories to remote clusters
 
 =head1 OPTIONS
 
+    -b            bandwidth limit, specified in Kbits/sec.
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.

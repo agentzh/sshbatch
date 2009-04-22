@@ -1,3 +1,6 @@
+0.004
+- no longer set tty => 1 explicitly.
+
 0.003
 - added the key2nodes script.
 - fixed the waitpid bug in atnodes.
