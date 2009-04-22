@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 1;
 __END__
@@ -71,6 +71,16 @@ Upload local files/directories to remote clusters
 This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, and L<tonodes>.
 
 Parallel SSH communication is used to ensure minimal latency.
+
+=head1 TODO
+
+=over
+
+=item *
+
+Add a C<-c> option to the scripts to limit ssh concurrency level.
+
+=back
 
 =head1 INSTALLATION
 
