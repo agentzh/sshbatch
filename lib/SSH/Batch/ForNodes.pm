@@ -44,13 +44,14 @@ sub load_rc ($$) {
         s/\#.*//;
         next if /^\s*$/;
         chomp;
-        if (s/\\\s*$//) {
-            $accum_ln .= $_;
+        if (s/\\\s*$//s) {
+            $accum_ln .= " $_";
             next;
         }
         if (defined $accum_ln) {
-            parse_line($accum_ln, $rcfile);
+            parse_line("$accum_ln $_", $rcfile);
             undef $accum_ln;
+            next;
         }
         parse_line($_, $rcfile);
     }
