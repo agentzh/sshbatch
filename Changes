@@ -1,3 +1,8 @@
+0.011
+- now we ignore user's SSH_BATCH_SSH_CMD environment settings in the test
+  scaffold, fixing a bogus test failure on some user's machines with
+  the env set.
+
 0.010
 - added -L option to use host-very-output-line output format.
 
