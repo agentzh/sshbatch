@@ -1,3 +1,6 @@
+0.012
+- fixed the special case when Net::OpenSSH::spawn returns invalid PID (-1).
+
 0.011
 - now we ignore user's SSH_BATCH_SSH_CMD environment settings in the test
   scaffold, fixing a bogus test failure on some user's machines with
