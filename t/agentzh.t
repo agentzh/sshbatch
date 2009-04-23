@@ -146,6 +146,24 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     is $out, '', 'no output, no hostname';
 }
 
+{
+    my $out = atnodes2('hostname', '-c', 2, '{buggy}', '-L');
+    open my $in, '<', \$out;
+    my $i = 0;
+    while (<$in>) {
+        chomp;
+        next if /^ssh:.*?: Name or service not known\r?$/s;
+        my $host = $hosts->[$i++];
+        my $hostname;
+        if ($host =~ /^\w+/) {
+            $hostname = $&;
+        }
+        like $_, qr/^\Q$host\E: $hostname$/, 'hostname works';
+    }
+    ## out: $out
+}
+#exit;
+
 cleanup_remote_tree($count);
 my $outs = tonodes('-r', '-rsync', 't/tmp', '--', '{tq}', ':/tmp/');
 for my $out (@$outs) {

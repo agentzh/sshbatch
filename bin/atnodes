@@ -151,7 +151,6 @@ while (1) {
     }
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
-        push @outs, $outfile;
         my $pid = $conns{$host}->system({
             (defined $password?
                 (stdin_data => "$password\n") : (stdin_discard => 1)),
@@ -160,6 +159,15 @@ while (1) {
             async => 1,
             #tty => 1,
         }, @cmd);
+        #warn "PID: $pid\n";
+        if (!defined $pid or $pid == -1) {
+            close $out;
+            unlink $outfile;
+            delete $conns{$host};
+            $active_count--;
+            next;
+        }
+        push @outs, $outfile;
         push @pids, $pid;
         $pid2host{$pid} = $host;
     }
