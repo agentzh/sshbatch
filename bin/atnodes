@@ -26,6 +26,7 @@ $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
 my $fetch_value;
 my $found_sep;
 my $last_option;
+my $line_mode;
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -58,6 +59,8 @@ for (@ARGV) {
             $fetch_value = sub { $concurrency = shift };
         } elsif ($group eq 'ssh') {
             $fetch_value = sub { $ssh_cmd = shift };
+        } elsif ($group eq 'L') {
+            $line_mode = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -164,7 +167,9 @@ while (1) {
         my $pid = shift @pids;
         my $host = delete $pid2host{$pid};
         $active_count--;
-        print "===" x 10, " $host ", "===" x 10, "\n";
+        if (!$line_mode) {
+            print "===" x 7, " $host ", "===" x 7, "\n";
+        }
         if (!defined $pid) {
             warn "Failed to connect to host $host.\n";
             delete $conns{$host};
@@ -189,13 +194,30 @@ while (1) {
             warn "Can't open $outfile for reading: $!\n";
             next;
         }
+        my $has_run = 0;
         while (<$in>) {
-            print;
+            chomp;
+            if (!$has_run) {
+                $has_run = 1;
+            }
+            if ($line_mode) {
+                print "$host: ";
+            }
+            print "$_\n";
         }
         if ($exit > 0) {
+            if ($line_mode) {
+                print STDERR "$host: ";
+            }
             warn "Remote command returns status code $exit.\n";
+            $has_run = 1;
         }
-        print "\n";
+        if (!$has_run && $line_mode) {
+            print "$host: \n";
+        }
+        if (!$line_mode) {
+            print "\n";
+        }
         close $in;
     }
 }
@@ -214,6 +236,8 @@ OPTIONS:
     -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)
@@ -269,6 +293,8 @@ atnodes - Run command on clusters
     -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)

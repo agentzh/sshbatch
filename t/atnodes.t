@@ -47,6 +47,8 @@ OPTIONS:
     -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)

@@ -61,6 +61,18 @@ sub atnodes (@) {
     return \@outs;
 }
 
+sub atnodes2 (@) {
+    my ($out, $err);
+    run3 [$^X, 'bin/atnodes', @_], \undef, \$out, \$out;
+    if ($? != 0) {
+        warn "atnodes returns non-zero status: ", $? >> 8, "\n";
+    }
+    if ($err) {
+        warn $err;
+    }
+    return $out;
+}
+
 sub gen_local_tree () {
     if (-d 't/tmp') {
         sh 'rm -rf t/tmp';
@@ -92,6 +104,42 @@ sub cleanup_remote_tree ($) {
 my $hosts = fornodes('{tq}');
 my $count = @$hosts;
 ok $count > 3, "more than 3 hosts in {tq} (found $count)";
+
+{
+    my $out = atnodes2('exit 1', '{tq}', '-L');
+    my @lines = split /\n/, $out;
+    my $i = 0;
+    for my $host (@$hosts) {
+        like $lines[$i++],
+            qr/^\Q$host\E: Remote command returns status code 1\.$/,
+            'line mode works';
+    }
+}
+
+{
+    my $out = atnodes2('echo hello, world; echo hey', '{tq}', '-L');
+    my @lines = split /\n/, $out;
+    my $i = 0;
+    for my $host (@$hosts) {
+        like $lines[$i++],
+            qr/^\Q$host\E: hello, world$/,
+            'line mode works';
+        like $lines[$i++],
+            qr/^\Q$host\E: hey$/,
+            'line mode works';
+    }
+}
+
+{
+    my $out = atnodes2('echo', '{tq}', '-L');
+    my @lines = split /\n/, $out;
+    my $i = 0;
+    for my $host (@$hosts) {
+        like $lines[$i++],
+            qr/^\Q$host\E: $/,
+            'line mode works';
+    }
+}
 
 cleanup_remote_tree($count);
 my $outs = tonodes('-r', '-rsync', 't/tmp', '--', '{tq}', ':/tmp/');
@@ -186,5 +234,4 @@ is scalar(@$outs), $count, 'all hosts generate outputs';
 for my $out (@$outs) {
     is $out, "\nREADME\na.txt\nb.txt\n\n", 'only specified files uploaded';
 }
-
 

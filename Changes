@@ -1,3 +1,6 @@
+0.010
+- added -L option to use host-very-output-line output format.
+
 0.009
 - ignored status code difference in t/fornodes.pm so that there won't be
   bogus test failures on BSD.
