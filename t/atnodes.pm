@@ -10,6 +10,7 @@ if (!-d 't/tmp') {
     mkdir 't/tmp';
 }
 $ENV{LC_ALL} = 'en_US.UTF-8';
+delete $ENV{SSH_BATCH_SSH_CMD};
 $ENV{HOME} = "$FindBin::Bin/tmp";
 #warn $ENV{HOME};
 my $RcFile = $ENV{HOME} . '/.fornodesrc';
