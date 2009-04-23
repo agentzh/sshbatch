@@ -161,10 +161,17 @@ while (1) {
         }, @cmd);
         #warn "PID: $pid\n";
         if (!defined $pid or $pid == -1) {
+            $active_count--;
+            if (!$line_mode) {
+                print "===" x 7, " $host ", "===" x 7, "\n";
+            }
+            if ($line_mode) {
+                print STDERR "$host: ";
+            }
+            warn "Failed to spawn command.\n";
             close $out;
             unlink $outfile;
             delete $conns{$host};
-            $active_count--;
             next;
         }
         push @outs, $outfile;

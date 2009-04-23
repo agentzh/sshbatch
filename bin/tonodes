@@ -25,6 +25,7 @@ my (@files, @exprs);
 my $fetch_value;
 my $found_sep;
 my $last_option;
+my $line_mode;
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -63,6 +64,8 @@ for (@ARGV) {
             $use_rsync = 1;
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
+        } elsif ($group eq 'L') {
+            $line_mode = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -183,7 +186,6 @@ while (1) {
     }
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
-        push @outs, $outfile;
         my $meth = $use_rsync ? 'rsync_put' : 'scp_put';
 
         ## starting transfer to host: $host
@@ -195,6 +197,21 @@ while (1) {
             defined $bwlimit ? (bwlimit => $bwlimit) : (),
             # XXX recursive
         }, @files, $target_path);
+        if (!defined $pid or $pid == -1) {
+            $active_count--;
+            if (!$line_mode) {
+                print "===" x 7, " $host ", "===" x 7, "\n";
+            }
+            if ($line_mode) {
+                print STDERR "$host: ";
+            }
+            warn "Failed to transfer files.\n";
+            close $out;
+            unlink $outfile;
+            delete $conns{$host};
+            next;
+        }
+        push @outs, $outfile;
         push @pids, $pid;
         $pid2host{$pid} = $host;
     }
@@ -203,7 +220,9 @@ while (1) {
         my $host = delete $pid2host{$pid};
         $active_count--;
         ## waiting transfer to host: $host
-        print "===" x 10, " $host ", "===" x 10, "\n";
+        if (!$line_mode) {
+            print "===" x 10, " $host ", "===" x 10, "\n";
+        }
         if (!defined $pid) {
             warn "Failed to connect to host $host.\n";
             delete $conns{$host};
@@ -221,19 +240,31 @@ while (1) {
             }
         } else {
             #redo if ($! == EINTR);
+            if ($line_mode) {
+                print STDERR "$host: ";
+            }
             warn "$host: waitpid($pid) failed: $!\n";
             next;
         }
         my $outfile = shift @outs;
         my $in;
         if (!open $in, $outfile) {
+            if ($line_mode) {
+                print STDERR "$host: ";
+            }
             warn "Can't open $outfile for reading: $!\n";
             next;
         }
         while (<$in>) {
-            print;
+            chomp;
+            if ($line_mode) {
+                print "$host: ";
+            }
+            print "$_\n";
         }
-        print "\n";
+        if (!$line_mode) {
+            print "\n";
+        }
         close $in;
     }
 }
@@ -252,6 +283,8 @@ OPTIONS:
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
@@ -298,6 +331,8 @@ tonodes - Upload local files/directories to remote clusters
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -t <timeout>  Specify timeout for net traffic.

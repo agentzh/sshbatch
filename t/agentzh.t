@@ -47,6 +47,18 @@ sub tonodes (@) {
     return \@outs;
 }
 
+sub tonodes2 (@) {
+    my ($out, $err);
+    run3 [$^X, 'bin/tonodes', @_], \undef, \$out, \$out;
+    if ($? != 0) {
+        warn "tonodes returns non-zero status: ", $? >> 8, "\n";
+    }
+    if ($err) {
+        warn $err;
+    }
+    return $out;
+}
+
 sub atnodes (@) {
     my ($out, $err);
     run3 [$^X, 'bin/atnodes', @_], \undef, \$out, \$out;
@@ -105,6 +117,7 @@ my $hosts = fornodes('{tq}');
 my $count = @$hosts;
 ok $count > 3, "more than 3 hosts in {tq} (found $count)";
 
+# atnodes: exit 1
 {
     my $out = atnodes2('exit 1', '{tq}', '-L');
     my @lines = split /\n/, $out;
@@ -116,6 +129,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     }
 }
 
+# atnodes: multi-line output
 {
     my $out = atnodes2('echo hello, world; echo hey', '{tq}', '-L');
     my @lines = split /\n/, $out;
@@ -130,6 +144,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     }
 }
 
+# atnodes: single-line
 {
     my $out = atnodes2('echo', '{tq}', '-L');
     my @lines = split /\n/, $out;
@@ -141,18 +156,25 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     }
 }
 
+# atnodes: no output
 {
     my $out = atnodes2('echo -n', '{tq}', '-L');
     is $out, '', 'no output, no hostname';
 }
 
+# atnodes: buggy with invalid hosts
 {
-    my $out = atnodes2('hostname', '-c', 2, '{buggy}', '-L');
+    my $out = atnodes2('hostname', '{buggy}', '-L');
     open my $in, '<', \$out;
     my $i = 0;
+    my $fail_count = 0;
     while (<$in>) {
         chomp;
         next if /^ssh:.*?: Name or service not known\r?$/s;
+        if (/^\S+: Failed to spawn command\.$/) {
+            $fail_count++;
+            next;
+        }
         my $host = $hosts->[$i++];
         my $hostname;
         if ($host =~ /^\w+/) {
@@ -160,8 +182,72 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
         }
         like $_, qr/^\Q$host\E: $hostname$/, 'hostname works';
     }
+    close $in;
+    cmp_ok $fail_count, '>', 1, 'fail count okay';
     ## out: $out
 }
+
+# atnodes: buggy with timeout hosts
+{
+    my $out = atnodes2('hostname', '-t', 2, '{timeout}', '-L');
+    open my $in, '<', \$out;
+    my $i = 0;
+    my $fail_count = 0;
+    while (<$in>) {
+        chomp;
+        next if /^ssh:.*?: Name or service not known\r?$/s;
+        if (/^\S+: Failed to spawn command\.$/) {
+            $fail_count++;
+            next;
+        }
+        my $host = $hosts->[$i++];
+        my $hostname;
+        if ($host =~ /^\w+/) {
+            $hostname = $&;
+        }
+        like $_, qr/^\Q$host\E: $hostname$/, 'hostname works';
+    }
+    close $in;
+    cmp_ok $fail_count, '>=', 1, 'fail count okay';
+    ## out: $out
+}
+
+# tonodes: buggy with invalid hosts
+{
+    my $out = tonodes2('t/agentzh.t', '{buggy}:/tmp/', '-L');
+    open my $in, '<', \$out;
+    my $i = 0;
+    my $fail_count = 0;
+    while (<$in>) {
+        chomp;
+        next if /^ssh:.*?: Name or service not known\r?$/s;
+        if (/^\S+: Failed to transfer files\.$/) {
+            $fail_count++;
+            next;
+        }
+    }
+    close $in;
+    cmp_ok $fail_count, '>', 1, 'fail count okay';
+    ## out: $out
+}
+
+# tonodes: buggy with timeout hosts
+{
+    my $out = tonodes2('t/agentzh.t', '-t', 2, '{timeout}:/tmp/', '-L');
+    open my $in, '<', \$out;
+    my $i = 0;
+    my $fail_count = 0;
+    while (<$in>) {
+        chomp;
+        if (/^\S+: Failed to transfer files\.$/) {
+            $fail_count++;
+        }
+    }
+    close $in;
+    cmp_ok $fail_count, '>=', 1, 'fail count okay';
+    ## out: $out
+}
+
 #exit;
 
 cleanup_remote_tree($count);

@@ -49,6 +49,8 @@ OPTIONS:
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
@@ -146,6 +148,8 @@ OPTIONS:
     -g            Use glob to process the input files/directories.
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -L            Use the line-mode output format, i.e., prefixing
+                  every output line with the machine name.
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
