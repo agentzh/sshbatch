@@ -4,6 +4,10 @@
 - added support for the SSH_BATCH_SSH_CMD environment to let user specify
   his own ssh path. But it could be further overriden by the -ssh command
   line option.
+- added docs to explain how to pass custom options to the underlying "ssh"
+  program by means of custom ssh wrapper scripts.
+- added docs to make clear that we require at least OpenSSH 4.1 client
+  side executable "ssh".
 
 0.008
 - added -ssh <path> option to atnodes.
