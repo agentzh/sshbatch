@@ -277,7 +277,24 @@ atnodes - Run command on clusters
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
 
-=head1 DESCRIPTION
+=head1 PREREQUISITES
+
+C<atnodes> (as well as the other scripts bundled by L<SSH::Batch>) requires the OpenSSH I<client> executable (usually spelled "ssh") with multiplexing support (at least OpenSSH 4.1). To check your C<ssh> version, use the command:
+
+    $ ssh -v
+
+On my machine, it echos
+
+    OpenSSH_4.7p1 Debian-8ubuntu1.2, OpenSSL 0.9.8g 19 Oct 2007
+    usage: ssh [-1246AaCfgKkMNnqsTtVvXxY] [-b bind_address] [-c cipher_spec]
+               [-D [bind_address:]port] [-e escape_char] [-F configfile]
+               [-i identity_file] [-L [bind_address:]port:host:hostport]
+               [-l login_name] [-m mac_spec] [-O ctl_cmd] [-o option] [-p port] [-R [bind_address:]port:host:hostport] [-S ctl_path]
+               [-w local_tun[:remote_tun]] [user@]hostname [command]
+
+There's no spesial requirement on the server side ssh service. Even a non-OpenSSH server-side deamon should work as well.
+
+=head1 TUNING
 
 By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further.
 
@@ -292,6 +309,8 @@ Note that to specify your own "ssh" is also a way to pass more options to the un
 
     $ export SSH_BATCH_SSH_CMD=~/bin/myssh
     $ atnodes 'ls -lh' '{my_cluster_name}'
+
+It's important to use "exec" in your own ssh wrapper script, or you may see C<atnodes> hangs.
 
 =head1 SEE ALSO
 

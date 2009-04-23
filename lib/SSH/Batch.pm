@@ -88,15 +88,22 @@ This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bun
 
 Parallel SSH communication is used to ensure minimal latency.
 
-=head1 TODO
+=head1 PREREQUISITES
 
-=over
+This module uses L<Net::OpenSSH> behind the scene, so it requires the OpenSSH I<client> executable (usually spelled "ssh") with multiplexing support (at least OpenSSH 4.1). To check your C<ssh> version, use the command:
 
-=item *
+    $ ssh -v
 
-Add a C<-c> option to the scripts to limit ssh concurrency level.
+On my machine, it echos
 
-=back
+    OpenSSH_4.7p1 Debian-8ubuntu1.2, OpenSSL 0.9.8g 19 Oct 2007
+    usage: ssh [-1246AaCfgKkMNnqsTtVvXxY] [-b bind_address] [-c cipher_spec]
+               [-D [bind_address:]port] [-e escape_char] [-F configfile]
+               [-i identity_file] [-L [bind_address:]port:host:hostport]
+               [-l login_name] [-m mac_spec] [-O ctl_cmd] [-o option] [-p port] [-R [bind_address:]port:host:hostport] [-S ctl_path]
+               [-w local_tun[:remote_tun]] [user@]hostname [command]
+
+There's no spesial requirement on the server side ssh service. Even a non-OpenSSH server-side deamon should work as well.
 
 =head1 INSTALLATION
 
