@@ -142,7 +142,6 @@ while (1) {
 
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
-        push @outs, $outfile;
         my $pid = $conns{$host}->system({
             stdin_data => $pubkey,
             stdout_fh => $out,
@@ -150,6 +149,16 @@ while (1) {
             async => 1,
             #tty => 1,
         }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
+        if (!defined $pid or $pid == -1) {
+            $active_count--;
+            print "===" x 7, " $host ", "===" x 7, "\n";
+            warn "Failed to spawn command.\n\n";
+            close $out;
+            unlink $outfile;
+            delete $conns{$host};
+            next;
+        }
+        push @outs, $outfile;
         push @pids, $pid;
         $pid2host{$pid} = $host;
     }
