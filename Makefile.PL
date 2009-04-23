@@ -25,6 +25,7 @@ no_index( directory => qw< t inc doc share demo > );
 install_script      ('bin/fornodes');
 install_script      ('bin/atnodes');
 install_script      ('bin/tonodes');
+install_script      ('bin/key2nodes');
 
 auto_install();
 WriteAll();

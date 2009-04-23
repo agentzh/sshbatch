@@ -1,3 +1,8 @@
+0.013
+- apply the invalid PID fixes to tonodes and key2nodes as well.
+- implemented -L option in tonodes.
+- now we install key2nodes in Makefile.PL as well.
+
 0.012
 - fixed the special case when Net::OpenSSH::spawn returns invalid PID (-1).
 
