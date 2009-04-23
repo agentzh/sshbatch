@@ -141,6 +141,11 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     }
 }
 
+{
+    my $out = atnodes2('echo -n', '{tq}', '-L');
+    is $out, '', 'no output, no hostname';
+}
+
 cleanup_remote_tree($count);
 my $outs = tonodes('-r', '-rsync', 't/tmp', '--', '{tq}', ':/tmp/');
 for my $out (@$outs) {
@@ -181,7 +186,6 @@ $outs = tonodes('t/tmp', '{tq}:/tmp/', '-v');
 for my $out (@$outs) {
     is $out, "\n", 'transfer successfuly';
 }
-exit;
 
 $outs = atnodes('ls /tmp/tmp', '{tq}');
 is scalar(@$outs), $count, 'all hosts generate outputs';
@@ -235,3 +239,4 @@ for my $out (@$outs) {
     is $out, "\nREADME\na.txt\nb.txt\n\n", 'only specified files uploaded';
 }
 
+warn "DONE.\n";
