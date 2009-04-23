@@ -21,6 +21,8 @@ my $list_hosts_only = 0;
 my ($user, $port, $timeout, $verbose, $ask_for_pass);
 my $concurrency = 20;
 my (@cmd, @exprs, $ssh_cmd);
+$ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
+
 my $fetch_value;
 my $found_sep;
 my $last_option;
@@ -214,6 +216,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
+                  (This overrides the SSH_BATCH_SSH_CMD environment.)
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
@@ -268,10 +271,27 @@ atnodes - Run command on clusters
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
+                  (This overrides the SSH_BATCH_SSH_CMD environment.)
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+
+=head1 DESCRIPTION
+
+By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further.
+
+Note that to specify your own "ssh" is also a way to pass more options to the underlying OpenSSH client executable when using C<atnodes>:
+
+    $ cat > ~/bin/myssh
+    #!/bin/sh
+    # to enable X11 forwarding:
+    exec ssh -X "$@"
+
+    $ chmod +x ~/bin/myssh
+
+    $ export SSH_BATCH_SSH_CMD=~/bin/myssh
+    $ atnodes 'ls -lh' '{my_cluster_name}'
 
 =head1 SEE ALSO
 

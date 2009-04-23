@@ -1,3 +1,10 @@
+0.009
+- ignored status code difference in t/fornodes.pm so that there won't be
+  bogus test failures on BSD.
+- added support for the SSH_BATCH_SSH_CMD environment to let user specify
+  his own ssh path. But it could be further overriden by the -ssh command
+  line option.
+
 0.008
 - added -ssh <path> option to atnodes.
 

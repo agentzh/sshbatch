@@ -49,6 +49,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
+                  (This overrides the SSH_BATCH_SSH_CMD environment.)
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
