@@ -157,6 +157,7 @@ if ($ask_for_pass) {
     while (not defined ($password = ReadLine(0))) {
     }
     ReadMode(0);
+    print "\n";
     chomp $password;
     if (!$password) {
         die "No password specified.\n";
@@ -172,9 +173,8 @@ while (1) {
     while ($active_count < $concurrency) {
         last if !@hosts;
         my $host = shift @hosts;
-        $active_count++;
         ## connecting to host: $host
-        $conns{$host} = Net::OpenSSH->new(
+        my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,
             defined $timeout ? (timeout => $timeout) : (),
@@ -182,6 +182,18 @@ while (1) {
             defined $port ? (port => $port) : (),
             defined $password ? (password => $password) : (),
         );
+        if ($ssh->error) {
+            if ($line_mode) {
+                print STDERR "$host: ";
+            } else {
+                print "===" x 7, " $host ", "===" x 7, "\n";
+            }
+            warn "ERROR: Failed to establish SSH connection: ",
+                $ssh->error, "\n";
+            next;
+        }
+        $conns{$host} = $ssh;
+        $active_count++;
         push @active_hosts, $host;
     }
     for my $host (@active_hosts) {
@@ -189,7 +201,8 @@ while (1) {
         my $meth = $use_rsync ? 'rsync_put' : 'scp_put';
 
         ## starting transfer to host: $host
-        my $pid = $conns{$host}->$meth({
+        my $ssh = $conns{$host};
+        my $pid = $ssh->$meth({
             stdout_fh => $out,
             stderr_to_stdout => 1,
             async => 1,
@@ -199,13 +212,16 @@ while (1) {
         }, @files, $target_path);
         if (!defined $pid or $pid == -1) {
             $active_count--;
-            if (!$line_mode) {
-                print "===" x 7, " $host ", "===" x 7, "\n";
-            }
             if ($line_mode) {
                 print STDERR "$host: ";
+            } else {
+                print "===" x 7, " $host ", "===" x 7, "\n";
             }
-            warn "Failed to transfer files.\n";
+            if ($ssh->error) {
+                warn "ERROR: ", $ssh->error, "\n";
+            } else {
+                warn "ERROR: Failed to transfer files.\n";
+            }
             close $out;
             unlink $outfile;
             delete $conns{$host};
@@ -221,7 +237,7 @@ while (1) {
         $active_count--;
         ## waiting transfer to host: $host
         if (!$line_mode) {
-            print "===" x 10, " $host ", "===" x 10, "\n";
+            print "===" x 7, " $host ", "===" x 7, "\n";
         }
         if (!defined $pid) {
             warn "Failed to connect to host $host.\n";

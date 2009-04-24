@@ -122,6 +122,7 @@ if ($ask_for_pass) {
     while (not defined ($password = ReadLine(0))) {
     }
     ReadMode(0);
+    print "\n";
     chomp $password;
     if (!$password) {
         die "No password specified.\n";
@@ -137,8 +138,7 @@ while (1) {
     while ($active_count < $concurrency) {
         last if !@hosts;
         my $host = shift @hosts;
-        $active_count++;
-        $conns{$host} = Net::OpenSSH->new(
+        my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,
             defined $timeout ? (timeout => $timeout) : (),
@@ -147,11 +147,24 @@ while (1) {
             defined $password ? (password => $password) : (),
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
         );
+        if ($ssh->error) {
+            if ($line_mode) {
+                print STDERR "$host: ";
+            } else {
+                print "===" x 7, " $host ", "===" x 7, "\n";
+            }
+            warn "ERROR: Failed to establish SSH connection: ",
+                $ssh->error, "\n";
+            next;
+        }
+        $conns{$host} = $ssh;
+        $active_count++;
         push @active_hosts, $host;
     }
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
-        my $pid = $conns{$host}->system({
+        my $ssh = $conns{$host};
+        my $pid = $ssh->system({
             (defined $password?
                 (stdin_data => "$password\n") : (stdin_discard => 1)),
             stdout_fh => $out,
@@ -162,13 +175,16 @@ while (1) {
         #warn "PID: $pid\n";
         if (!defined $pid or $pid == -1) {
             $active_count--;
-            if (!$line_mode) {
-                print "===" x 7, " $host ", "===" x 7, "\n";
-            }
             if ($line_mode) {
                 print STDERR "$host: ";
+            } else {
+                print "===" x 7, " $host ", "===" x 7, "\n";
             }
-            warn "Failed to spawn command.\n";
+            if ($ssh->error) {
+                warn "ERROR: ", $ssh->error, "\n";
+            } else {
+                warn "ERROR: Failed to spawn command.\n";
+            }
             close $out;
             unlink $outfile;
             delete $conns{$host};
@@ -186,7 +202,7 @@ while (1) {
             print "===" x 7, " $host ", "===" x 7, "\n";
         }
         if (!defined $pid) {
-            warn "Failed to connect to host $host.\n";
+            warn "ERROR: Failed to connect to host $host.\n";
             delete $conns{$host};
             next;
         }
@@ -198,7 +214,7 @@ while (1) {
 
         unless ($ret > 0) {
             #redo if ($! == EINTR);
-            warn "$host: waitpid($pid) failed: $!\n";
+            warn "$host: ERROR: waitpid($pid) failed: $!\n";
             next;
         }
 
@@ -206,7 +222,7 @@ while (1) {
 
         my $in;
         if (!open $in, $outfile) {
-            warn "Can't open $outfile for reading: $!\n";
+            warn "ERROR: Can't open $outfile for reading: $!\n";
             next;
         }
         while (<$in>) {

@@ -114,6 +114,7 @@ ReadMode(2);
 while (not defined ($password = ReadLine(0))) {
 }
 ReadMode(0);
+print "\n";
 chomp $password;
 if (!$password) {
     die "No password specified.\n";
@@ -129,7 +130,7 @@ while (1) {
         last if !@hosts;
         my $host = shift @hosts;
         $active_count++;
-        $conns{$host} = Net::OpenSSH->new(
+        my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,
             defined $timeout ? (timeout => $timeout) : (),
@@ -137,12 +138,21 @@ while (1) {
             defined $port ? (port => $port) : (),
             password => $password,
         );
+        if ($ssh->error) {
+            print "===" x 7, " $host ", "===" x 7, "\n";
+            warn "ERROR: Failed to establish SSH connection: ",
+                $ssh->error, "\n";
+            next;
+        }
+        $conns{$host} = $ssh;
+        $active_count++;
         push @active_hosts, $host;
     }
 
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
-        my $pid = $conns{$host}->system({
+        my $ssh = $conns{$host};
+        my $pid = $ssh->system({
             stdin_data => $pubkey,
             stdout_fh => $out,
             stderr_to_stdout => 1,
@@ -153,6 +163,11 @@ while (1) {
             $active_count--;
             print "===" x 7, " $host ", "===" x 7, "\n";
             warn "Failed to spawn command.\n\n";
+            if ($ssh->error) {
+                warn "ERROR: ", $ssh->error, "\n";
+            } else {
+                warn "ERROR: Failed to spawn command.\n";
+            }
             close $out;
             unlink $outfile;
             delete $conns{$host};
@@ -169,7 +184,7 @@ while (1) {
         my $pid = shift @pids;
         my $host = delete $pid2host{$pid};
         $active_count--;
-        print "===" x 10, " $host ", "===" x 10, "\n";
+        print "===" x 7, " $host ", "===" x 7, "\n";
         if (!defined $pid) {
             warn "Failed to connect to host $host.\n";
             delete $conns{$host};

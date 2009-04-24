@@ -171,7 +171,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     while (<$in>) {
         chomp;
         next if /^ssh:.*?: Name or service not known\r?$/s;
-        if (/^\S+: Failed to spawn command\.$/) {
+        if (/^\S+: ERROR: /) {
             $fail_count++;
             next;
         }
@@ -196,7 +196,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     while (<$in>) {
         chomp;
         next if /^ssh:.*?: Name or service not known\r?$/s;
-        if (/^\S+: Failed to spawn command\.$/) {
+        if (/^\S+: ERROR: .*?timed out/) {
             $fail_count++;
             next;
         }
@@ -221,7 +221,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     while (<$in>) {
         chomp;
         next if /^ssh:.*?: Name or service not known\r?$/s;
-        if (/^\S+: Failed to transfer files\.$/) {
+        if (/^\S+: ERROR: /) {
             $fail_count++;
             next;
         }
@@ -239,7 +239,7 @@ ok $count > 3, "more than 3 hosts in {tq} (found $count)";
     my $fail_count = 0;
     while (<$in>) {
         chomp;
-        if (/^\S+: Failed to transfer files\.$/) {
+        if (/^\S+: ERROR: .*?timed out/) {
             $fail_count++;
         }
     }
