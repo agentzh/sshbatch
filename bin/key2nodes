@@ -257,13 +257,14 @@ key2nodes - Push SSH public keys to remote clusters
 
 =head1 DESCRIPTION
 
-This script push local ~/.ssh/id_rsa.pub file (i.e. the SSH public key) onto the remote server's ~/.ssh/authorized_keys. It will chmod .ssh to 700 and .ssh/authorized_keys to 640.
+This script push local F<~/.ssh/id_rsa.pub> file (i.e. the SSH public key) onto the remote server's F<~/.ssh/authorized_keys>. It will chmod F<.ssh> to C<700> and F<.ssh/authorized_keys> to C<640>.
 
 If there's no .ssh directory on the remote server, it will try to create one.
 
 Note that the sh/bash shell is assumed on the remote machines.
 
-When no ~/.ssh/id_rsa.pub file found on the local machine, it will invoke "ssh-keygen -t rsa" automatically.
+When no F<~/.ssh/id_rsa.pub> file found on the local machine, it will invoke
+C<ssh-keygen -t rsa> automatically.
 
 =head1 SEE ALSO
 

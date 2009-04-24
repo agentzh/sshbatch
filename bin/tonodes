@@ -340,6 +340,10 @@ tonodes - Upload local files/directories to remote clusters
     -v            Be verbose.
     -w            Prompt for password (used mostly for login and sudo).
 
+=head1 DESCRIPTION
+
+Please refer to L<SSH::Batch> for more documentation.
+
 =head1 SEE ALSO
 
 L<fornodes>, L<atnodes>, L<SSH::Batch>, L<key2nodes>, L<Net::OpenSSH>.

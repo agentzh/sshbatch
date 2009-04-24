@@ -40,6 +40,10 @@ fornodes - Expand patterns to machine host list.
     $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
     $ fornodes '{ps} * {as}'  # set intersect
 
+=head1 DESCRIPTION
+
+Please refer to L<SSH::Batch> for more documentation.
+
 =head1 SEE ALSO
 
 L<key2nodes>, L<atnodes>, L<tonodes>, L<SSH::Batch>, L<Net::OpenSSH>.

@@ -327,23 +327,9 @@ On my machine, it echos
 
 There's no spesial requirement on the server side ssh service. Even a non-OpenSSH server-side deamon should work as well.
 
-=head1 TUNING
+=head1 DESCRIPTION
 
-By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further.
-
-Note that to specify your own "ssh" is also a way to pass more options to the underlying OpenSSH client executable when using C<atnodes>:
-
-    $ cat > ~/bin/myssh
-    #!/bin/sh
-    # to enable X11 forwarding:
-    exec ssh -X "$@"
-
-    $ chmod +x ~/bin/myssh
-
-    $ export SSH_BATCH_SSH_CMD=~/bin/myssh
-    $ atnodes 'ls -lh' '{my_cluster_name}'
-
-It's important to use "exec" in your own ssh wrapper script, or you may see C<atnodes> hangs.
+Please refer to L<SSH::Batch> for more documentation.
 
 =head1 SEE ALSO
 
