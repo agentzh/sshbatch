@@ -1,6 +1,6 @@
 0.014
 - added a lot more docs.
-- 
+- display Net::OpenSSH's error messages when failures occur.
 
 0.013
 - apply the invalid PID fixes to tonodes and key2nodes as well.
