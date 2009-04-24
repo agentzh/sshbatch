@@ -232,6 +232,21 @@ TIPS
         "dry-run".) After checking, you can safely remove the "-l" option
         and go on.
 
+    Specify a different ssh port or user name.
+        You may have already learned that you can use the "-u" and "-p"
+        options to specify a non-default user account or SSH port. But it's
+        also possible and often more convenient to put it as part of your
+        cluster spec expression, either in ~/.fornodesrc or on the command
+        line, as in
+
+            $ cat > ~/.fornodesrc
+            # cluster A uses the default user name:
+            A=foo[01-25].com
+            # cluster B uses the non-default user name "jim" and a port 12345
+            B=jim@foo[26-28].com:12345
+
+            $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
+
     Use "-L" to help grepping the outputs by hostname
         When managing hundreds or even thousands of machines, it's often
         more convenient to "grep" over the outputs of atnodes or tonodes by

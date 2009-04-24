@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.014';
+our $VERSION = '0.015';
 
 1;
 __END__
@@ -225,6 +225,18 @@ wildcards with L<atnodes> or L<tonodes>, as in
 So that L<atnodes> will just echos out the exact host list that it would
 operate on but without doing anything. (It's effectively a "dry-run".)
 After checking, you can safely remove the C<-l> option and go on.
+
+=item Specify a different ssh port or user name.
+
+You may have already learned that you can use the C<-u> and C<-p> options to specify a non-default user account or SSH port. But it's also possible and often more convenient to put it as part of your cluster spec expression, either in F<~/.fornodesrc> or on the command line, as in
+
+    $ cat > ~/.fornodesrc
+    # cluster A uses the default user name:
+    A=foo[01-25].com
+    # cluster B uses the non-default user name "jim" and a port 12345
+    B=jim@foo[26-28].com:12345
+
+    $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
 
 =item Use C<-L> to help grepping the outputs by hostname
 

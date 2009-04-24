@@ -1,3 +1,7 @@
+0.015
+- added a tip for port and user name integration in the cluster spec
+  expressions.
+
 0.014
 - display Net::OpenSSH's error messages when failures occur.
 - added a lot more docs.
