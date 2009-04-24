@@ -253,7 +253,7 @@ key2nodes - Push SSH public keys to remote clusters
 
 =head1 SYNOPSIS
 
-    # run a command on the specified servers:
+    # push SSH public keys to remote clusters
     $ key2nodes 'ws[1101-1105].as.com'
 
 =head1 USAGE
