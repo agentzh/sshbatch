@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 1;
 __END__
@@ -206,7 +206,7 @@ Note that to specify your own "ssh" is also a way to pass more options to the un
 
 It's important to use "exec" in your own ssh wrapper script, or you may see C<atnodes> hangs.
 
-=head1 Use wildcard for cluster expressions to save typing
+=item Use wildcard for cluster expressions to save typing
 
 Wildcards in cluster spec could save a lot of typing. Say, if you have
 C<api10.foo.bar.baz.bah.com.cn> appeared in your F<~/.fornodesrc> file:

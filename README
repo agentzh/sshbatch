@@ -65,11 +65,198 @@ SYNOPSIS
             $ key2nodes 'ws[1101-1105].as.com'
 
 DESCRIPTION
+    System administration (sysadmin) is also part of my $work. Playing with
+    a (big) bunch of machines without a handy tool is painful. So I
+    refactored some of our old scripts and hence this module.
+
     This is a high-level abstraction over the powerful Net::OpenSSH module.
     A bunch of handy scripts are provided to simplify big cluster
     operations: fornodes, atnodes, tonodes, and key2nodes.
 
-    Parallel SSH communication is used to ensure minimal latency.
+    "SSH::Batch" allows you to name your clusters using variables and
+    interval/set syntax in your ~/.fornodesrc config file. For instance:
+
+        $ cat ~/.fornodesrc
+        A=foo[01-03].com bar.org
+        B=bar.org baz[a-b,d,e-g].cn foo02.com
+        C={A} * {B}
+        D={A} - {B}
+
+    where cluster "C" is the intersection set of cluster "A" and "B" while
+    "D" is the sef of machines that are in "A" but not in "B".
+
+    And then you can query machine host list by using "SSH::Batch"'s
+    fornodes script:
+
+       $ fornodes '{C}'
+       bar.org
+       foo02.com
+
+       $ fornodes '{D}'
+       foo01.com
+       foo03.com
+
+       $ fornodes blah.com '{C} + {D}'
+       bar.org
+       blah.com
+       foo01.com
+       foo02.com
+       foo03.com
+
+    It's always best practice to put spaces around set operators like "+",
+    "-", "*", and "/", so as to allow these characters (notably the dash
+    "-") in your host names, as in:
+
+      $ fornodes 'foo-bar-[a-d].com - foo-bar-c.com'
+      foo-bar-a.com
+      foo-bar-b.com
+      foo-bar-d.com
+
+    for the ranges like "[a-z]", there's also an alternative syntax:
+
+       [a..z]
+
+    To exclude some discrete values from certain range, you need set
+    subtration:
+
+       foo[1-100].com - foo[32,56].com
+
+    or equivalently
+
+       foo[1-31,33-55,57-100].com
+
+    fornodes could be very handy in shell programming. For example, to test
+    the 80 port HTTP service of a cluster "A", simply put
+
+     $ for node in `fornodes '{A}'`; \
+         do curl "http://$node:80/blah'; \
+       done
+
+    Also, other scripts in this module, like atnodes, tonodes, and key2nodes
+    also call fornodes internally so that you can use the cluster spec
+    syntax in those scripts' command line as well.
+
+    atnodes meets the common requirement of running a command on a remote
+    cluster. For example:
+
+      # at the concurrency level of 6:
+      atnodes 'ls -lh' '{A} + {B}' my.more.com -c 6
+
+    Or upload a local file to the remote cluster:
+
+      tonodes ~/my.tar.gz '{A} / {B}' :/tmp/
+
+    or multiple files as well as some directories:
+
+      tonodes -r ~/mydir ~/mydir2/*.so -- foo.com bar.cn :~/
+
+    It's also possible to use wildcards in the cluster spec expression, as
+    in
+
+      atnodes 'ls ~' 'api??.*.com'
+
+    where atnodes will match the pattern "api??.*.com" against the
+    "universal set" consisting of those hosts appeared in ~/fornodesrc and
+    those host names apeared before this pattern on the command line (if
+    any). Note that only "?" (match any character) and "*" (match 0 or more
+    characters) are supported here.
+
+    There's also a key2nodes script to push SSH public keys to remote
+    machines ;)
+
+TIPS
+    There's some extra tips found in our own's everyday use:
+
+    Running sudo commands
+        Often, we want to run commands requiring root access, such as when
+        installing software packages on remote machines. So you'll have to
+        tell atnodes to prompt for your password:
+
+          $ atnodes 'sudo yum install blah' '{my_cluster}' -w
+
+        Then you'll be prompted by the "Password:" prompt after which you
+        enter your remote password (with echo back turned off).
+
+        Because the remote sshd might be smart enough to "remember" the sudo
+        password for a (small) amount of time, immediate subsequent "sudo"
+        might omit the "-w" option, as in
+
+          $ atnodes 'sudo mv ~/foo /usr/local/bin/' {my_cluster}
+
+        But remember, you can use *sudo without passwords* just for a
+        *small* amount of time ;)
+
+    Passing custom options to the underlying "ssh"
+        By default, "atnodes" relies on Net::OpenSSH to locate the OpenSSH
+        client executable "ssh". But you can define the "SSH_BATCH_SSH_CMD"
+        environment to specify the command explicitly. You can use the
+        "-ssh" option to override it further.
+
+        Note that to specify your own "ssh" is also a way to pass more
+        options to the underlying OpenSSH client executable when using
+        "atnodes":
+
+            $ cat > ~/bin/myssh
+            #!/bin/sh
+            # to enable X11 forwarding:
+            exec ssh -X "$@"
+
+            $ chmod +x ~/bin/myssh
+
+            $ export SSH_BATCH_SSH_CMD=~/bin/myssh
+            $ atnodes 'ls -lh' '{my_cluster_name}'
+
+        It's important to use "exec" in your own ssh wrapper script, or you
+        may see "atnodes" hangs.
+
+    Use wildcard for cluster expressions to save typing
+        Wildcards in cluster spec could save a lot of typing. Say, if you
+        have "api10.foo.bar.baz.bah.com.cn" appeared in your ~/.fornodesrc
+        file:
+
+          $ cat ~/.fornodesrc
+          MyCluster=api[01-22].foo.bar.baz.bah.com.cn
+
+        then in case you want to refer to the "api10.foo.bar.baz.bah.com.cn"
+        node alone on the command line, you can just say "api10*", or
+        "api10.*.com.cn", or something more specific.
+
+        But use wildcards with care. You may have nodes that you don't want
+        in your resulting host list. So it's best practice to use -l option
+        when you use wildcards with atnodes or tonodes, as in
+
+          $ atnodes 'rm -rf /opt/blah' 'api10*' -l
+
+        So that atnodes will just echos out the exact host list that it
+        would operate on but without doing anything. (It's effectively a
+        "dry-run".) After checking, you can safely remove the "-l" option
+        and go on.
+
+    Use "-L" to help grepping the outputs by hostname
+        When managing hundreds or even thousands of machines, it's often
+        more convenient to "grep" over the outputs of atnodes or tonodes by
+        host names. The "-L" option makes atnodes and tonodes to prefixing
+        every output lines of the remote commands (if any) by the host name.
+        As in
+
+          $ atnodes 'top -b|head -n5' '{my_big_cluster}' -L > out.txt 2>&1
+          $ grep 'some.specific.host.com' out.txt
+
+    Specify a timeout to prevent hanging
+        It's often wise to specify a timeout for SSH operations. For
+        example, if there's 3 sec of network traffic silence, the following
+        command will quit with an error message printed:
+
+          $ atnodes -t 3 'sleep 4' {my_cluster}
+
+    Limit the bandwith used by tonodes to be firewall-friendly
+        You can use the "-b" option to tell tonodes to use limited bandwidth
+        if your intranet's Firewall is paranoid about your bandwidth use:
+
+          $ tonodes my_big_file {my_cluster}:/tmp/ -b 8000
+
+        where 8000 is in the unit of Kbits/sec, so it will not transfer
+        faster than 1 MByte/sec.
 
 PREREQUISITES
     This module uses Net::OpenSSH behind the scene, so it requires the
@@ -106,6 +293,19 @@ SOURCE CONTROL
         http://github.com/agentzh/sshbatch/tree/master
 
     If you have a branch for me to pull, please let me know ;)
+
+TODO
+    *   Cache the parsing and evaluation results of the config file
+        ~/.fornodesrc to somewhere like the fiel ~/.fornodesrc.cached.
+
+    *   Abstract the duplicate code found in the scripts to a shared .pm
+        file.
+
+    *   Add the fromnodes script to help downloading files from the remote
+        clusters to local file system (maybe grouped by host name).
+
+    *   Add the betweennodes script to transfer files between clusters
+        through localhost.
 
 SEE ALSO
     fornodes, atnodes, tonodes, key2nodes, SSH::Batch::ForNodes,

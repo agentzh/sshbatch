@@ -3,7 +3,7 @@ package SSH::Batch::ForNodes;
 use strict;
 use warnings;
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 use Set::Scalar;
 use File::HomeDir;
