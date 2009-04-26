@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.016';
+our $VERSION = '0.017';
 
 1;
 __END__

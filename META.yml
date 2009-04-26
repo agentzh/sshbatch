@@ -26,4 +26,4 @@ requires:
   Set::Scalar: 1.23
   Term::ReadKey: 2.30
   perl: 5.6.1
-version: 0.016
+version: 0.017

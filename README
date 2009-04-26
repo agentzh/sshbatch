@@ -319,7 +319,7 @@ TODO
     *   Add the fromnodes script to help downloading files from the remote
         clusters to local file system (maybe grouped by host name).
 
-    *   Add the betweennodes script to transfer files between clusters
+    *   Add the "betweennodes" script to transfer files between clusters
         through localhost.
 
 SEE ALSO
