@@ -261,7 +261,7 @@ __END__
 
 =head1 NAME
 
-SSH::Batch::ForNodes - Expands set arithmetic expression to host list.
+SSH::Batch::ForNodes - Expand set arithmetic expression to host list
 
 =head1 SYNOPSIS
 
