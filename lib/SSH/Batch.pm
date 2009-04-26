@@ -323,7 +323,7 @@ clusters to local file system (maybe grouped by host name).
 
 =item *
 
-Add the C<betweenodes> script to transfer files between clusters through
+Add the C<betweennodes> script to transfer files between clusters through
 localhost.
 
 =back

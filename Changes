@@ -1,3 +1,9 @@
+0.017
+- now in the test scaffold, we use LC_ALL=C rather than LC_ALL=en_US.UTF-8.
+  the latter is not available on certain systems.
+- skipped the "no home" tests on non-linux systems.
+- minor doc fixes.
+
 0.016
 - fixed a doc typo found by franck.
 

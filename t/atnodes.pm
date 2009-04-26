@@ -9,11 +9,13 @@ our @EXPORT = qw( run_tests );
 if (!-d 't/tmp') {
     mkdir 't/tmp';
 }
-$ENV{LC_ALL} = 'en_US.UTF-8';
+$ENV{LC_ALL} = 'C';
 delete $ENV{SSH_BATCH_SSH_CMD};
 $ENV{HOME} = "$FindBin::Bin/tmp";
 #warn $ENV{HOME};
 my $RcFile = $ENV{HOME} . '/.fornodesrc';
+
+my $is_linux = ($^O =~ /linux/i);
 
 sub run_tests () {
     for my $block (blocks()) {
@@ -31,6 +33,14 @@ sub write_rc (@) {
 sub run_test ($) {
     my $block = shift;
     my $name = $block->name;
+
+    if (defined $block->linux_only && ! $is_linux) {
+        diag "$name - Tests skipped on $^O\n";
+        for (1..3) {
+            pass("tests skipped on $^O\n");
+        }
+    }
+
     my $args = $block->args;
     if (!defined $args) {
         die "$name - No --- args specified.\n";
