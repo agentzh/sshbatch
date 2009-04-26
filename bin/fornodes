@@ -21,7 +21,7 @@ __END__
 
 =head1 NAME
 
-fornodes - Expand patterns to machine host list.
+fornodes - Expand patterns to machine host list
 
 =head1 SYNOPSIS
 
