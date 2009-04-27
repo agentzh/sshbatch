@@ -1,6 +1,8 @@
 0.018
 - now the fornodes script puts hosts in a single line. use -x to get the
   old one-host-per-line behavior.
+- now the use can set the SSH_BATCH_LINE_MODE env to set -L for every
+  atnodes/tonodes execution.
 
 0.017
 - now in the test scaffold, we use LC_ALL=C rather than LC_ALL=en_US.UTF-8.
