@@ -19,11 +19,11 @@ no_index:
     - inc
     - t
 requires:
-  File::HomeDir: 0.86
+  File::HomeDir: 0
   File::Temp: 0
   IO::Pty: 0
   Net::OpenSSH: 0.34
   Set::Scalar: 1.23
   Term::ReadKey: 2.30
   perl: 5.6.1
-version: 0.017
+version: 0.018

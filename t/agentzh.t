@@ -32,7 +32,8 @@ sub fornodes (@) {
     if ($err) {
         warn $err;
     }
-    my @hosts = split /\n/ms, $out;
+    chomp $out;
+    my @hosts = split / /ms, $out;
     return \@hosts;
 }
 
