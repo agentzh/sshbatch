@@ -5,6 +5,9 @@ use warnings;
 use IPC::Run3 qw(run3);
 #use List::MoreUtils qw( all );
 
+delete $ENV{SSH_BATCH_SSH_CMD};
+delete $ENV{SSH_BATCH_LINE_MODE};
+
 my $should_skip;
 BEGIN {
     $should_skip = ! $ENV{SSH_BATCH_TEST_AGENTZH};

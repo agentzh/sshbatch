@@ -52,6 +52,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
                   every output line with the machine name.
+                  (could be controlled by the env SSH_BATCH_LINE_MODE)
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
@@ -151,6 +152,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
                   every output line with the machine name.
+                  (could be controlled by the env SSH_BATCH_LINE_MODE)
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.

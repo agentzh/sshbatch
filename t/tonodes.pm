@@ -11,6 +11,7 @@ if (!-d 't/tmp') {
 }
 $ENV{LC_ALL} = 'C';
 $ENV{HOME} = "$FindBin::Bin/tmp";
+delete $ENV{SSH_BATCH_LINE_MODE};
 #warn $ENV{HOME};
 my $RcFile = $ENV{HOME} . '/.fornodesrc';
 

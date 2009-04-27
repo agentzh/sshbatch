@@ -26,7 +26,7 @@ $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
 my $fetch_value;
 my $found_sep;
 my $last_option;
-my $line_mode;
+my $line_mode = $ENV{SSH_BATCH_LINE_MODE};
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -261,6 +261,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
                   every output line with the machine name.
+                  (could be controlled by the env SSH_BATCH_LINE_MODE)
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)
@@ -318,6 +319,7 @@ atnodes - Run commands on clusters
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
                   every output line with the machine name.
+                  (could be controlled by the env SSH_BATCH_LINE_MODE)
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)

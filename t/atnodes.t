@@ -50,6 +50,7 @@ OPTIONS:
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
                   every output line with the machine name.
+                  (could be controlled by the env SSH_BATCH_LINE_MODE)
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)
