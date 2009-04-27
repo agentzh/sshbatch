@@ -1,3 +1,7 @@
+0.019
+- fixed the typo in the fornodes usage and docs. it should be -x rather than
+  -l.
+
 0.018
 - now the fornodes script puts hosts in a single line. use -x to get the
   old one-host-per-line behavior.

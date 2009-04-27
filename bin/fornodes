@@ -55,7 +55,7 @@ USAGE:
 
 OPTIONS:
     -h      Print this help
-    -l      Expand the host list output to multiple lines.
+    -x      Expand the host list output to multiple lines.
 _EOC_
     if ($exit_code == 0) {
         print $msg;
@@ -96,7 +96,7 @@ fornodes - Expand patterns to machine host list
 =head1 OPTIONS
 
     -h      Print this help
-    -l      Expand the host list output to multiple lines.
+    -x      Expand the host list output to multiple lines.
 
 =head1 DESCRIPTION
 
