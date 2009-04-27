@@ -45,7 +45,7 @@ USAGE:
 
 OPTIONS:
     -h      Print this help
-    -l      Expand the host list output to multiple lines.
+    -x      Expand the host list output to multiple lines.
 --- status: 255
 
 
@@ -458,6 +458,21 @@ a b c
 d
 --- out
 a b c d
+--- err
+--- status: 0
+
+
+
+=== TEST 43: help
+--- opts: -h
+--- out
+USAGE:
+
+    fornodes [OPTIONS] HOST_PATTERN... [OPTIONS]
+
+OPTIONS:
+    -h      Print this help
+    -x      Expand the host list output to multiple lines.
 --- err
 --- status: 0
 

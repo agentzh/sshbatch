@@ -40,6 +40,7 @@ sub run_test ($) {
         for (1..3) {
             pass("tests skipped on $^O\n");
         }
+        return;
     }
 
     my $args = $block->args;

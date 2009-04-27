@@ -38,11 +38,12 @@ sub run_test ($) {
         for (1..3) {
             pass("tests skipped on $^O\n");
         }
+        return;
     }
     my $expr = $block->expr;
-    chomp $expr;
-    if (!defined $expr) {
-        die "No --- expr specified.\n";
+    if (defined $expr) { chomp $expr; }
+    if (!defined $expr && !defined $block->opts) {
+        die "Neither --- expr nor --- opts specified.\n";
     }
     if (defined $block->rc) {
         write_rc($block->rc);
@@ -58,7 +59,7 @@ sub run_test ($) {
     if (defined $block->opts) {
         @opts = split /\s+/, $block->opts;
     }
-    my @cmd = ($^X, 'bin/fornodes', @opts, $expr);
+    my @cmd = ($^X, 'bin/fornodes', @opts, defined $expr ? $expr : ());
     my ($in, $out, $err);
     IPC::Run3::run3 \@cmd, \$in, \$out, \$err;
     if (defined $block->status) {
