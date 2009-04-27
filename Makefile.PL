@@ -9,7 +9,7 @@ perl_version        ('5.006001');
 all_from            ('lib/SSH/Batch.pm');
 
 requires            ('Set::Scalar'   => '1.23');
-requires            ('File::HomeDir' => '0.86');
+requires            ('File::HomeDir');
 requires            ('Net::OpenSSH'  => '0.34');
 requires            ('File::Temp');
 requires            ('Term::ReadKey' => '2.30');

@@ -101,26 +101,18 @@ where cluster C<C> is the intersection set of cluster C<A> and C<B> while C<D> i
 And then you can query machine host list by using C<SSH::Batch>'s L<fornodes> script:
 
    $ fornodes '{C}'
-   bar.org
-   foo02.com
+   bar.org foo02.com
 
    $ fornodes '{D}'
-   foo01.com
-   foo03.com
+   foo01.com foo03.com
 
    $ fornodes blah.com '{C} + {D}'
-   bar.org
-   blah.com
-   foo01.com
-   foo02.com
-   foo03.com
+   bar.org blah.com foo01.com foo02.com foo03.com
 
 It's always best practice to B<put spaces around set operators> like C<+>, C<->, C<*>, and C</>, so as to allow these characters (notably the dash C<->) in your host names, as in:
 
   $ fornodes 'foo-bar-[a-d].com - foo-bar-c.com'
-  foo-bar-a.com
-  foo-bar-b.com
-  foo-bar-d.com
+  foo-bar-a.com foo-bar-b.com foo-bar-d.com
 
 for the ranges like C<[a-z]>, there's also an alternative syntax:
 

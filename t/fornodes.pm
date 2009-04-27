@@ -54,7 +54,11 @@ sub run_test ($) {
         $prev_home = $ENV{HOME};
         $ENV{HOME} = '/foo/bar/baz/32rdssfsd32';
     }
-    my @cmd = ($^X, 'bin/fornodes', $expr);
+    my @opts;
+    if (defined $block->opts) {
+        @opts = split /\s+/, $block->opts;
+    }
+    my @cmd = ($^X, 'bin/fornodes', @opts, $expr);
     my ($in, $out, $err);
     IPC::Run3::run3 \@cmd, \$in, \$out, \$err;
     if (defined $block->status) {
@@ -75,6 +79,7 @@ sub run_test ($) {
         warn $err, "\n";
     }
     if (defined $block->out) {
+        $out =~ s/^\s+$//s;
         $out =~ s/\Q$RcFile\E/**RC_FILE_PATH**/g;
         is $out, $block->out, "$name - stdout ok";
     }

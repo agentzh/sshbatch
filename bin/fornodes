@@ -7,16 +7,65 @@ use warnings;
 use lib 'lib';
 use SSH::Batch::ForNodes;
 
+sub help ($);
+
 my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
 SSH::Batch::ForNodes::load_rc($rc, $rcfile);
 
-## @ARGV
-my $expr = join ' ', @ARGV or
-    die "No argument specified.\n";
-my $set = SSH::Batch::ForNodes::parse_expr($expr);
-for my $host (sort $set->elements) {
-    print "$host\n";
+my $expand_list;
+my @args;
+for (@ARGV) {
+    if (/^-(.*)/) {
+        my $group = $1;
+        if ($group eq 'x') {
+            $expand_list = 1;
+        } elsif ($group eq 'h') {
+            help(0);
+        } else {
+            die "ERROR: Unknown option $_\n";
+        }
+    } else {
+        push @args, $_;
+    }
 }
+
+## @ARGV
+my $expr = join ' ', @args;
+if (!$expr) {
+    warn "No argument specified.\n\n";
+    help(1);
+}
+
+my $set = SSH::Batch::ForNodes::parse_expr($expr);
+
+if ($expand_list) {
+    for my $host (sort $set->elements) {
+        print $host, "\n";
+    }
+} else {
+    print join(' ', sort $set->elements), "\n";
+}
+
+sub help ($) {
+    my $exit_code = shift;
+    my $msg = <<'_EOC_';
+USAGE:
+
+    fornodes [OPTIONS] HOST_PATTERN... [OPTIONS]
+
+OPTIONS:
+    -h      Print this help
+    -l      Expand the host list output to multiple lines.
+_EOC_
+    if ($exit_code == 0) {
+        print $msg;
+        exit 0;
+    } else {
+        warn $msg;
+        exit $exit_code;
+    }
+}
+
 __END__
 
 =head1 NAME
@@ -39,6 +88,15 @@ fornodes - Expand patterns to machine host list
     $ fornodes 'tq[ab-ac].[1101-1105].foo.com'
     $ fornodes '{ps} + {as} - ws1104.as.com'  # set union and subtraction
     $ fornodes '{ps} * {as}'  # set intersect
+
+=head1 USAGE
+
+    fornodes [OPTIONS] HOST_PATTERN... [OPTIONS]
+
+=head1 OPTIONS
+
+    -h      Print this help
+    -l      Expand the host list output to multiple lines.
 
 =head1 DESCRIPTION
 

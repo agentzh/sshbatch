@@ -38,6 +38,14 @@ api=api01.foo.com api02.foo.com
 --- out
 --- err
 No argument specified.
+
+USAGE:
+
+    fornodes [OPTIONS] HOST_PATTERN... [OPTIONS]
+
+OPTIONS:
+    -h      Print this help
+    -l      Expand the host list output to multiple lines.
 --- status: 255
 
 
@@ -46,8 +54,7 @@ No argument specified.
 --- expr: foo.com bar.cn
 --- err
 --- out
-bar.cn
-foo.com
+bar.cn foo.com
 --- status: 0
 
 
@@ -63,8 +70,7 @@ foo.com
 === TEST 6: matched wildcard ?
 --- expr: api??.foo.com
 --- out
-api01.foo.com
-api02.foo.com
+api01.foo.com api02.foo.com
 --- err
 --- status: 0
 
@@ -72,6 +78,7 @@ api02.foo.com
 
 === TEST 7: wildcard *
 --- expr: api*
+--- opts: -x
 --- err
 --- out
 api01.foo.com
@@ -93,8 +100,7 @@ api02.foo.com
 --- expr: {api}
 --- err
 --- out
-api01.foo.com
-api02.foo.com
+api01.foo.com api02.foo.com
 --- status: 0
 
 
@@ -112,8 +118,7 @@ Invalid variable reference syntax: { api }
 --- expr: {api} + {api}
 --- err
 --- out
-api01.foo.com
-api02.foo.com
+api01.foo.com api02.foo.com
 --- status: 0
 
 
@@ -156,8 +161,7 @@ api02.foo.com
 --- expr: {api} * {api}
 --- err
 --- out
-api01.foo.com
-api02.foo.com
+api01.foo.com api02.foo.com
 --- status: 0
 
 
@@ -166,8 +170,7 @@ api02.foo.com
 --- expr: {api}*{api}
 --- err
 --- out
-api01.foo.com
-api02.foo.com
+api01.foo.com api02.foo.com
 --- status: 0
 
 
@@ -206,9 +209,7 @@ api=api[01-03].foo.com
 tq=tq[1101-1105,1011-1021].bar.cn +{api}
 --- expr: {api}
 --- out
-api01.foo.com
-api02.foo.com
-api03.foo.com
+api01.foo.com api02.foo.com api03.foo.com
 --- err
 --- status: 0
 
@@ -219,6 +220,7 @@ api03.foo.com
 # .rc files...
 api=api[01-03].foo.com
 tq=tq[1101-1105,1011-1021].bar.cn + {api}
+--- opts: -x
 --- expr: {tq}
 --- out
 api01.foo.com
@@ -248,9 +250,7 @@ tq1105.bar.cn
 === TEST 23: intersect
 --- expr: {api} * {tq}
 --- out
-api01.foo.com
-api02.foo.com
-api03.foo.com
+api01.foo.com api02.foo.com api03.foo.com
 --- err
 --- status: 0
 
@@ -266,6 +266,7 @@ api03.foo.com
 
 === TEST 25: subtraction (reversed)
 --- expr: {tq} - {api}
+--- opts: -x
 --- out
 tq1011.bar.cn
 tq1012.bar.cn
@@ -291,8 +292,7 @@ tq1105.bar.cn
 === TEST 26: ranges with wildcards
 --- expr: {tq} * tq[1102-1104]* - tq1103*
 --- out
-tq1102.bar.cn
-tq1104.bar.cn
+tq1102.bar.cn tq1104.bar.cn
 --- err
 --- status: 0
 
@@ -301,9 +301,7 @@ tq1104.bar.cn
 === TEST 27: ranges using '..'
 --- expr: [a..c].com
 --- out
-a.com
-b.com
-c.com
+a.com b.com c.com
 --- err
 --- status: 0
 
@@ -312,9 +310,7 @@ c.com
 === TEST 28: ranges using -
 --- expr: [a-c].com
 --- out
-a.com
-b.com
-c.com
+a.com b.com c.com
 --- err
 --- status: 0
 
@@ -323,9 +319,7 @@ c.com
 === TEST 29: more ranges
 --- expr: [aa-ac].com
 --- out
-aa.com
-ab.com
-ac.com
+aa.com ab.com ac.com
 --- err
 --- status: 0
 
@@ -334,10 +328,7 @@ ac.com
 === TEST 30: more ranges
 --- expr: [9-12].com
 --- out
-10.com
-11.com
-12.com
-9.com
+10.com 11.com 12.com 9.com
 --- err
 --- status: 0
 
@@ -346,12 +337,7 @@ ac.com
 === TEST 31: more ranges
 --- expr: [9-10,11,12,13-14].com
 --- out
-10.com
-11.com
-12.com
-13.com
-14.com
-9.com
+10.com 11.com 12.com 13.com 14.com 9.com
 --- err
 --- status: 0
 
@@ -360,10 +346,7 @@ ac.com
 === TEST 32: two ranges in one pattern
 --- expr: [a-b].[1..2].com
 --- out
-a.1.com
-a.2.com
-b.1.com
-b.2.com
+a.1.com a.2.com b.1.com b.2.com
 --- err
 --- status: 0
 
@@ -423,9 +406,7 @@ A=a b c
 B=b
 C=c
 --- out
-a
-b
-c
+a b c
 --- err
 --- status: 0
 
@@ -437,8 +418,7 @@ c
 A=a b c
 B=b c d
 --- out
-a
-d
+a d
 --- err
 --- status: 0
 
@@ -452,9 +432,7 @@ A=a c
   # blah...
 B=b
 --- out
-a
-b
-c
+a b c
 --- err
 --- status: 0
 
@@ -466,9 +444,7 @@ c
  A = a b \
     c
 --- out
-a
-b
-c
+a b c
 --- err
 --- status: 0
 
@@ -481,10 +457,7 @@ c
     c\
 d
 --- out
-a
-b
-c
-d
+a b c d
 --- err
 --- status: 0
 
