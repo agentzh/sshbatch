@@ -1,6 +1,7 @@
 0.019
 - fixed the typo in the fornodes usage and docs. it should be -x rather than
   -l.
+- fixed the test suite on non-linux systems.
 
 0.018
 - now the fornodes script puts hosts in a single line. use -x to get the
