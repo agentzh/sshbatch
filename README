@@ -2,6 +2,9 @@ NAME
     SSH::Batch - Cluster operations based on parallel SSH, set and interval
     arithmetic
 
+VERSION
+    This document describes SSH::Batch 0.020 released on May 3, 2009.
+
 SYNOPSIS
     The following scripts are provided:
 
@@ -178,6 +181,14 @@ TIPS
         But remember, you can use *sudo without passwords* just for a
         *small* amount of time ;)
 
+        If you see the following error message while doing sudo with atnodes
+
+          sudo: sorry, you must have a tty to run sudo
+
+        then you should probably comment out the "Defaults requiretty" line
+        in your server's /etc/sudoers file (or just do this for your own
+        account).
+
     Passing custom options to the underlying "ssh"
         By default, "atnodes" relies on Net::OpenSSH to locate the OpenSSH
         client executable "ssh". But you can define the "SSH_BATCH_SSH_CMD"
@@ -311,7 +322,7 @@ TODO
     *   Add the fromnodes script to help downloading files from the remote
         clusters to local file system (maybe grouped by host name).
 
-    *   Add the "betweennodes" script to transfer files between clusters
+    *   Add the betweennodes script to transfer files between clusters
         through localhost.
 
 SEE ALSO

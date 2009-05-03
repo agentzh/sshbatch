@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.019';
+our $VERSION = '0.020';
 
 1;
 __END__
@@ -11,6 +11,10 @@ __END__
 =head1 NAME
 
 SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmetic
+
+=head1 VERSION
+
+This document describes SSH::Batch 0.020 released on May 3, 2009.
 
 =head1 SYNOPSIS
 
@@ -180,6 +184,12 @@ for a (small) amount of time, immediate subsequent "sudo" might omit the C<-w> o
 But remember, you can use I<sudo without passwords> just for a I<small> amount of
 time ;)
 
+If you see the following error message while doing sudo with L<atnodes>
+
+  sudo: sorry, you must have a tty to run sudo
+
+then you should probably comment out the "Defaults requiretty" line in your server's F</etc/sudoers> file (or just do this for your own account).
+
 =item Passing custom options to the underlying C<ssh>
 
 By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further.
@@ -315,7 +325,7 @@ clusters to local file system (maybe grouped by host name).
 
 =item *
 
-Add the C<betweennodes> script to transfer files between clusters through
+Add the F<betweennodes> script to transfer files between clusters through
 localhost.
 
 =back

@@ -1,3 +1,8 @@
+0.020
+- explains the "sudo: sorry, you must have a tty to run sudo" error a bit in
+  the POD.
+- fixed the license name in Makefile.PL (and thus META.yml too).
+
 0.019
 - fixed the typo in the fornodes usage and docs. it should be -x rather than
   -l.
