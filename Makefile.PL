@@ -3,7 +3,7 @@ use lib '.';
 use inc::Module::Install;
 
 name                ('SSH-Batch');
-license             ('BSD');
+license             ('bsd');
 author              ('Agent Zhang <agentzh@yahoo.cn>');
 perl_version        ('5.006001');
 all_from            ('lib/SSH/Batch.pm');
