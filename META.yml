@@ -28,4 +28,4 @@ requires:
   perl: 5.6.1
 resources:
   license: http://opensource.org/licenses/bsd-license.php
-version: 0.020
+version: 0.021

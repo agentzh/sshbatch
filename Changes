@@ -1,3 +1,6 @@
+0.021
+- fixed the homedir mocking bug of the test suite for Mac.
+
 0.020
 - explains the "sudo: sorry, you must have a tty to run sudo" error a bit in
   the POD.
