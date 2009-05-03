@@ -17,7 +17,6 @@ __DATA__
 Can't find the home for the current user.
 --- out
 --- status: 2
---- linux_only
 
 
 
