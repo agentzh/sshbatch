@@ -12,9 +12,9 @@ if (!-d 't/tmp') {
 $ENV{LC_ALL} = 'C';
 delete $ENV{SSH_BATCH_SSH_CMD};
 delete $ENV{SSH_BATCH_LINE_MODE};
-$ENV{HOME} = "$FindBin::Bin/tmp";
-#warn $ENV{HOME};
-my $RcFile = $ENV{HOME} . '/.fornodesrc';
+$ENV{SSH_BATCH_HOME} = "$FindBin::Bin/tmp";
+#warn $ENV{SSH_BATCH_HOME};
+my $RcFile = $ENV{SSH_BATCH_HOME} . '/.fornodesrc';
 
 my $is_linux = ($^O =~ /linux/i);
 
@@ -43,6 +43,13 @@ sub run_test ($) {
         return;
     }
 
+    my $prev_home;
+    if (defined $block->no_home) {
+        $prev_home = $ENV{SSH_BATCH_HOME};
+        $ENV{SSH_BATCH_HOME} = '/foo/bar/baz/32rdssfsd32';
+        $RcFile = $ENV{SSH_BATCH_HOME} . '/.fornodesrc';
+    }
+
     my $args = $block->args;
     if (!defined $args) {
         die "$name - No --- args specified.\n";
@@ -56,11 +63,6 @@ sub run_test ($) {
     } elsif (defined $block->no_rc) {
         unlink $RcFile;
     }
-    my $prev_home;
-    if (defined $block->no_home) {
-        $prev_home = $ENV{HOME};
-        $ENV{HOME} = '/foo/bar/baz/32rdssfsd32';
-    }
     my $cmd = ("\"$^X\" bin/atnodes $args");
     my ($in, $out, $err);
     IPC::Run3::run3 $cmd, \$in, \$out, \$err;
@@ -73,7 +75,8 @@ sub run_test ($) {
         }
     }
     if (defined $block->no_home) {
-        $ENV{HOME} = $prev_home;
+        $ENV{SSH_BATCH_HOME} = $prev_home;
+        $RcFile = $ENV{SSH_BATCH_HOME} . '/.fornodesrc';
     }
     if (defined $block->err) {
         $err =~ s/\Q$RcFile\E/**RC_FILE_PATH**/g;

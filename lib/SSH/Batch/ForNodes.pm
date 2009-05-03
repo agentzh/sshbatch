@@ -27,8 +27,8 @@ sub clear_universe () {
 }
 
 sub init () {
-    my $home = File::HomeDir->my_home;
-    if (!defined $home) {
+    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
+    if (!defined $home || !-d $home) {
         die "Can't find the home for the current user.\n";
     }
     my $rcfile = "$home/.fornodesrc";

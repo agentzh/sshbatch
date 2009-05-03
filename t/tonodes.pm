@@ -10,10 +10,10 @@ if (!-d 't/tmp') {
     mkdir 't/tmp';
 }
 $ENV{LC_ALL} = 'C';
-$ENV{HOME} = "$FindBin::Bin/tmp";
+$ENV{SSH_BATCH_HOME} = "$FindBin::Bin/tmp";
+#warn $ENV{SSH_BATCH_HOME};
 delete $ENV{SSH_BATCH_LINE_MODE};
-#warn $ENV{HOME};
-my $RcFile = $ENV{HOME} . '/.fornodesrc';
+my $RcFile = $ENV{SSH_BATCH_HOME} . '/.fornodesrc';
 
 my $is_linux = ($^O =~ /linux/i);
 
@@ -57,8 +57,8 @@ sub run_test ($) {
     }
     my $prev_home;
     if (defined $block->no_home) {
-        $prev_home = $ENV{HOME};
-        $ENV{HOME} = '/foo/bar/baz/32rdssfsd32';
+        $prev_home = $ENV{SSH_BATCH_HOME};
+        $ENV{SSH_BATCH_HOME} = '/foo/bar/baz/32rdssfsd32';
     }
     my $cmd = ("\"$^X\" bin/tonodes $args");
     my ($in, $out, $err);
@@ -72,7 +72,7 @@ sub run_test ($) {
         }
     }
     if (defined $block->no_home) {
-        $ENV{HOME} = $prev_home;
+        $ENV{SSH_BATCH_HOME} = $prev_home;
     }
     if (defined $block->err) {
         $err =~ s/\Q$RcFile\E/**RC_FILE_PATH**/g;
