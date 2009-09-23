@@ -1,5 +1,6 @@
 0.021
 - fixed the homedir mocking bug of the test suite for Mac.
+- no longer skipped those tests marked as linux_only on non-linux systems.
 
 0.020
 - explains the "sudo: sorry, you must have a tty to run sudo" error a bit in

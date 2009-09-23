@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.021';
+our $VERSION = '0.022';
 
 1;
 __END__
@@ -14,7 +14,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.021 released on May 3, 2009.
+This document describes SSH::Batch 0.021 released on Sep 23, 2009.
 
 =head1 SYNOPSIS
 
@@ -192,7 +192,7 @@ then you should probably comment out the "Defaults requiretty" line in your serv
 
 =item Passing custom options to the underlying C<ssh>
 
-By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further.
+By default, C<atnodes> relies on L<Net::OpenSSH> to locate the OpenSSH client executable "ssh". But you can define the C<SSH_BATCH_SSH_CMD> environment to specify the command explicitly. You can use the C<-ssh> option to override it further. (The L<key2nodes> script also supports the C<SSH_BATCH_SSH_CMD> environment.)
 
 Note that to specify your own "ssh" is also a way to pass more options to the underlying OpenSSH client executable when using C<atnodes>:
 
@@ -200,6 +200,7 @@ Note that to specify your own "ssh" is also a way to pass more options to the un
     #!/bin/sh
     # to enable X11 forwarding:
     exec ssh -X "$@"
+    ^D
 
     $ chmod +x ~/bin/myssh
 
@@ -207,6 +208,8 @@ Note that to specify your own "ssh" is also a way to pass more options to the un
     $ atnodes 'ls -lh' '{my_cluster_name}'
 
 It's important to use "exec" in your own ssh wrapper script, or you may see C<atnodes> hangs.
+
+This trick also works for the L<key2nodes> script.
 
 =item Use wildcard for cluster expressions to save typing
 
@@ -267,6 +270,37 @@ if your intranet's Firewall is paranoid about your bandwidth use:
 
 where C<8000> is in the unit of Kbits/sec, so it will not transfer
 faster than 1 MByte/sec.
+
+=item Avoid logging manually for the first time
+
+When you use L<key2nodes> or L<atnodes> to access remote servers
+that you have never logged in manually, you would probably see the
+following errors:
+
+ ===================== foo.com =====================
+ Failed to spawn command.
+
+ ERROR: unable to establish master SSH connection: the authenticity of the target host can't be established, try loging manually first
+
+A work-around is using "ssh" to login to that C<foo.com> machine
+manually and then try L<key2nodes> or L<atnodes> again.
+
+Another nicer work-around is to pass the C<-o 'StrictHostKeyChecking=no'> option to the underlying F<ssh> executable used by C<SSH::Batch>.
+Here's a quick HOW-TO:
+
+    $ cat > ~/bin/myssh
+    #!/bin/sh
+    # to disable StrictHostKeyChecking
+    exec ssh -o 'StrictHostKeyChecking=no' "$@"
+    ^D
+
+    $ chmod +x ~/bin/myssh
+
+    $ export SSH_BATCH_SSH_CMD=~/bin/myssh
+
+    # then we try again
+    $ key2nodes foo.com
+    $ atnodes 'hostname' foo.com
 
 =back
 
