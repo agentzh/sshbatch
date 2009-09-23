@@ -11,3 +11,5 @@ pm_to_blib
 po/foo\.po$
 po/meta\.po$
 t/tmp
+^\.rsync$
+

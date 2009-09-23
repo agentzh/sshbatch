@@ -14,7 +14,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.021 released on Sep 23, 2009.
+This document describes SSH::Batch 0.022 released on Sep 23, 2009.
 
 =head1 SYNOPSIS
 

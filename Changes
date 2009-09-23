@@ -1,3 +1,9 @@
+0.022
+- tonodes: now we automatically expand ~ and ~foo using local USER env if set
+- added support for SSH_BATCH_SSH_CMD env and --ssh option to key2nodes.
+- tonodes now print a warning message while expanding ~ and ~foo locally in the target path.
+- added more docs explaining how to disable StrictHostKeyChecking for ssh
+
 0.021
 - fixed the homedir mocking bug of the test suite for Mac.
 - no longer skipped those tests marked as linux_only on non-linux systems.

@@ -3,7 +3,7 @@ NAME
     arithmetic
 
 VERSION
-    This document describes SSH::Batch 0.021 released on May 3, 2009.
+    This document describes SSH::Batch 0.022 released on Sep 23, 2009.
 
 SYNOPSIS
     The following scripts are provided:
@@ -193,7 +193,8 @@ TIPS
         By default, "atnodes" relies on Net::OpenSSH to locate the OpenSSH
         client executable "ssh". But you can define the "SSH_BATCH_SSH_CMD"
         environment to specify the command explicitly. You can use the
-        "-ssh" option to override it further.
+        "-ssh" option to override it further. (The key2nodes script also
+        supports the "SSH_BATCH_SSH_CMD" environment.)
 
         Note that to specify your own "ssh" is also a way to pass more
         options to the underlying OpenSSH client executable when using
@@ -203,6 +204,7 @@ TIPS
             #!/bin/sh
             # to enable X11 forwarding:
             exec ssh -X "$@"
+            ^D
 
             $ chmod +x ~/bin/myssh
 
@@ -211,6 +213,8 @@ TIPS
 
         It's important to use "exec" in your own ssh wrapper script, or you
         may see "atnodes" hangs.
+
+        This trick also works for the key2nodes script.
 
     Use wildcard for cluster expressions to save typing
         Wildcards in cluster spec could save a lot of typing. Say, if you
@@ -275,6 +279,37 @@ TIPS
 
         where 8000 is in the unit of Kbits/sec, so it will not transfer
         faster than 1 MByte/sec.
+
+    Avoid logging manually for the first time
+        When you use key2nodes or atnodes to access remote servers that you
+        have never logged in manually, you would probably see the following
+        errors:
+
+         ===================== foo.com =====================
+         Failed to spawn command.
+
+         ERROR: unable to establish master SSH connection: the authenticity of the target host can't be established, try loging manually first
+
+        A work-around is using "ssh" to login to that "foo.com" machine
+        manually and then try key2nodes or atnodes again.
+
+        Another nicer work-around is to pass the "-o
+        'StrictHostKeyChecking=no'" option to the underlying ssh executable
+        used by "SSH::Batch". Here's a quick HOW-TO:
+
+            $ cat > ~/bin/myssh
+            #!/bin/sh
+            # to disable StrictHostKeyChecking
+            exec ssh -o 'StrictHostKeyChecking=no' "$@"
+            ^D
+
+            $ chmod +x ~/bin/myssh
+
+            $ export SSH_BATCH_SSH_CMD=~/bin/myssh
+
+            # then we try again
+            $ key2nodes foo.com
+            $ atnodes 'hostname' foo.com
 
 PREREQUISITES
     This module uses Net::OpenSSH behind the scene, so it requires the
