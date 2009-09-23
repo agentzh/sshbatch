@@ -13,3 +13,5 @@ share/font
 t/*.dat
 *.tar.gz
 t/tmp
+.rsync
+
