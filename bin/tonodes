@@ -121,6 +121,10 @@ if ($expr =~ s/\s*:(\D\S*)\s*$//) {
     die "No remote target path specified.\n",
         "  (You forgot to specify \":/path/to/target\" at the end of the command line?)\n";
 }
+if (defined $ENV{USER}) {
+    $target_path =~ s{^~(/|$)}{/home/$ENV{USER}$1};
+}
+$target_path =~ s{^~(\w+)}{/home/$1};
 
 if ($expr =~ /^\s*$/) {
     die "No cluster expression specified.\n";
