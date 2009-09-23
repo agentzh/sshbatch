@@ -121,10 +121,22 @@ if ($expr =~ s/\s*:(\D\S*)\s*$//) {
     die "No remote target path specified.\n",
         "  (You forgot to specify \":/path/to/target\" at the end of the command line?)\n";
 }
+my $expanded_path = 0;
 if (defined $ENV{USER}) {
-    $target_path =~ s{^~(/|$)}{/home/$ENV{USER}$1};
+    my $old_target = $target_path;
+    # XXX FIXME Maybe we should expand ~ on the remote server?
+    if ($target_path =~ s{^~(/|$)}{/home/$ENV{USER}$1}) {
+        warn "WARNING: Expanding target path $old_target to $target_path\n";
+        $expanded_path = 1;
+    }
 }
-$target_path =~ s{^~(\w+)}{/home/$1};
+if (!$expanded_path) {
+    my $old_target = $target_path;
+    if ($target_path =~ s{^~(\w+)}{/home/$1}) {
+        warn "WARNING: Expanding target path $old_target to $target_path\n";
+        $expanded_path = 1;
+    }
+}
 
 if ($expr =~ /^\s*$/) {
     die "No cluster expression specified.\n";

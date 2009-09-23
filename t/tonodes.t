@@ -102,6 +102,7 @@ blah=foo
 --- err
 Using Scp method.
 Local files: [t/tonodes.t]
+WARNING: Expanding target path ~ to /home/sshbatch
 Cluster expression: foo.com *foo
 Target path: /home/sshbatch
 Cluster set: foo foo.com
@@ -117,6 +118,7 @@ blah=foo
 --- err
 Using Scp method.
 Local files: [t/tonodes.t]
+WARNING: Expanding target path ~/ to /home/sshbatch/
 Cluster expression: foo.com *foo
 Target path: /home/sshbatch/
 Cluster set: foo foo.com
@@ -201,6 +203,7 @@ ERROR: No files to be transferred.
 --- err
 Using Scp method.
 Local files: [t/tonodes.t]
+WARNING: Expanding target path ~foo to /home/foo
 Cluster expression: foo.com
 Target path: /home/foo
 Cluster set: foo.com
@@ -214,6 +217,7 @@ Cluster set: foo.com
 --- err
 Using Scp method.
 Local files: [t/tonodes.t]
+WARNING: Expanding target path ~foo/abc to /home/foo/abc
 Cluster expression: foo.com
 Target path: /home/foo/abc
 Cluster set: foo.com
@@ -227,6 +231,7 @@ Cluster set: foo.com
 --- err
 Using Scp method.
 Local files: [t/tonodes.t]
+WARNING: Expanding target path ~foo/baz~bar to /home/foo/baz~bar
 Cluster expression: foo.com
 Target path: /home/foo/baz~bar
 Cluster set: foo.com

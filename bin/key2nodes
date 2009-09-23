@@ -22,6 +22,7 @@ my ($user, $port, $timeout, $verbose);
 my (@exprs);
 my $concurrency = 20;
 my $fetch_value;
+my $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -45,6 +46,8 @@ for (@ARGV) {
             $fetch_value = sub { $port = shift };
         } elsif ($group eq 'v') {
             $verbose = 1;
+        } elsif ($group eq 'ssh') {
+            $fetch_value = sub { $ssh_cmd = shift };
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
         } else {
@@ -137,6 +140,7 @@ while (1) {
             defined $user ? (user => $user) : (),
             defined $port ? (port => $port) : (),
             password => $password,
+            defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
         );
         if ($ssh->error) {
             print "===" x 7, " $host ", "===" x 7, "\n";
@@ -233,6 +237,8 @@ OPTIONS:
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
+    -ssh <path>   Specify an alternate ssh program.
+                  (This overrides the SSH_BATCH_SSH_CMD environment.)
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
@@ -266,6 +272,8 @@ key2nodes - Push SSH public keys to remote clusters
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -p <port>     Port for the remote SSH service.
+    -ssh <path>   Specify an alternate ssh program.
+                  (This overrides the SSH_BATCH_SSH_CMD environment.)
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
