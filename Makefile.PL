@@ -28,5 +28,6 @@ install_script      ('bin/tonodes');
 install_script      ('bin/key2nodes');
 
 auto_install();
+repository 'http://github.com/agentzh/sshbatch';
 WriteAll();
 
