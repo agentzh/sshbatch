@@ -262,6 +262,12 @@ key2nodes - Push SSH public keys to remote clusters
     # push SSH public keys to remote clusters
     $ key2nodes 'ws[1101-1105].as.com'
 
+    $ cat > ~/.fornodesrc
+    office=blah.ps.com bloo.ps.com boo[2-25,32,41-70].ps.com
+
+    $ key2nodes '{office}'     # reference cluster var defined
+                               # in ~/.fornodesrc
+
 =head1 USAGE
 
     key2nodes [OPTIONS] HOST_PATTERN... [OPTIONS]

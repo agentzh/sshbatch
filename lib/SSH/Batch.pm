@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.022';
+our $VERSION = '0.023';
 
 1;
 __END__
@@ -14,7 +14,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.022 released on Sep 23, 2009.
+This document describes SSH::Batch 0.023 released on Jan 4, 2010.
 
 =head1 SYNOPSIS
 

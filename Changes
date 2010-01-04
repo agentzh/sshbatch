@@ -1,3 +1,7 @@
+0.023
+- key2nodes: more examples added to SYNOPSIS in its POD. thanks cnhackTNT++.
+- added repository address into Makefile.PL, thanks Alexandr Ciornii.
+
 0.022
 - tonodes: now we automatically expand ~ and ~foo using local USER env if set
 - added support for SSH_BATCH_SSH_CMD env and --ssh option to key2nodes.
