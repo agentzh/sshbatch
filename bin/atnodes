@@ -96,8 +96,7 @@ if ($verbose) {
     warn "Cluster expression: $expr\n";
 }
 
-my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
-SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+SSH::Batch::ForNodes::init_rc();
 my $set = SSH::Batch::ForNodes::parse_expr($expr);
 
 if ($set->is_empty) {

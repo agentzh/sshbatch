@@ -92,8 +92,7 @@ open my $in, $pubkey_file or
 my $pubkey = do { local $/; <$in> };
 close $in;
 
-my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
-SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+SSH::Batch::ForNodes::init_rc();
 my $set = SSH::Batch::ForNodes::parse_expr($expr);
 
 if ($set->is_empty) {

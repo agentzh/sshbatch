@@ -24,11 +24,8 @@ Can't find the home for the current user.
 --- args: ls *
 --- no_rc
 --- out
---- err
-Can't open **RC_FILE_PATH** for reading: No such file or directory
---- status: 2
-
-
+--- status: 0
+--- SKIP
 
 === TEST 3: no args given
 --- rc

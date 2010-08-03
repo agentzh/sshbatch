@@ -9,8 +9,7 @@ use SSH::Batch::ForNodes;
 
 sub help ($);
 
-my ($rc, $rcfile) = SSH::Batch::ForNodes::init();
-SSH::Batch::ForNodes::load_rc($rc, $rcfile);
+SSH::Batch::ForNodes::init_rc();
 
 my $expand_list;
 my @args;
