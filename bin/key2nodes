@@ -141,6 +141,7 @@ while (1) {
             defined $port ? (port => $port) : (),
             password => $password,
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
+            master_opts =>  [-o => "StrictHostKeyChecking no"],
         );
         if ($ssh->error) {
             print "===" x 7, " $host ", "===" x 7, "\n";
