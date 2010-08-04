@@ -9,6 +9,7 @@ use Net::OpenSSH;
 use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
+use Time::HiRes qw/sleep/;
 
 sub help ($);
 
@@ -26,6 +27,7 @@ $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
 my $fetch_value;
 my $found_sep;
 my $last_option;
+my $use_tty;
 my $line_mode = $ENV{SSH_BATCH_LINE_MODE};
 for (@ARGV) {
     if (defined $fetch_value) {
@@ -61,6 +63,8 @@ for (@ARGV) {
             $fetch_value = sub { $ssh_cmd = shift };
         } elsif ($group eq 'L') {
             $line_mode = 1;
+        } elsif ($group eq 'tty') {
+            $use_tty = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -85,6 +89,10 @@ if ($verbose) {
     if (defined $ssh_cmd) {
         warn "Using SSH program [$ssh_cmd].\n";
     }
+}
+
+if ($use_tty) {
+    $concurrency = 1;
 }
 
 if (!@exprs) {
@@ -164,12 +172,12 @@ while (1) {
         my ($out, $outfile) = tmpnam();
         my $ssh = $conns{$host};
         my $pid = $ssh->system({
-            (defined $password?
-                (stdin_data => "$password\n") : (stdin_discard => 1)),
+                (defined $password?
+                    (stdin_data => "$password\n") : ()),
             stdout_fh => $out,
             stderr_to_stdout => 1,
             async => 1,
-            #tty => 1,
+            defined $use_tty ? (tty => 1) : (),
         }, @cmd);
         #warn "PID: $pid\n";
         if (!defined $pid or $pid == -1) {
@@ -255,7 +263,7 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
-    -c <num>      Set SSH concurrency limit. (default: 20)
+    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -268,6 +276,7 @@ OPTIONS:
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+    -tty          Pseudo-tty.
 _EOC_
     if ($exit_code == 0) {
         print $msg;
@@ -313,7 +322,7 @@ atnodes - Run commands on clusters
 
 =head1 OPTIONS
 
-    -c <num>      Set SSH concurrency limit. (default: 20)
+    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -326,6 +335,7 @@ atnodes - Run commands on clusters
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+    -tty          Pseudo-tty.
 
 =head1 PREREQUISITES
 
