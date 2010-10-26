@@ -335,7 +335,7 @@ atnodes - Run commands on clusters
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
-    -tty          Pseudo-tty.
+    -tty          Use pseudo-tty.
 
 =head1 PREREQUISITES
 

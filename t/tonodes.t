@@ -56,6 +56,9 @@ OPTIONS:
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
+    -archive      Enable rsync archive mode
+    -update       Enable rsync update
+    -compress     Enable rsync compress
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
@@ -158,6 +161,9 @@ OPTIONS:
     -p <port>     Port for the remote SSH service.
     -r            Recurse into directories too.
     -rsync        Use "rsync" to transfer files.
+    -archive      Enable rsync archive mode
+    -update       Enable rsync update
+    -compress     Enable rsync compress
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
