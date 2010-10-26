@@ -56,10 +56,13 @@ SYNOPSIS
             $ tonodes /tmp/*.inst -- '{as}:/tmp/'
             $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt
 
+            $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
+
             # use rsync instead of scp:
             $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt -rsync
 
-            $ tonodes -r /opt /bin/* -- 'ws[1101-1102].foo.com' 'bar.com' :/foo/bar/
+            # use rsync archive update compress
+            $ tonodes foo.txt 'ws1105*' :/tmp/bar.txt -rsync -archive -update -compress
 
     key2nodes
         Push the SSH public key (or generate one if not any) to the remote
