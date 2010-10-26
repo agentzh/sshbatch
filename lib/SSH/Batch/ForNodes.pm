@@ -96,6 +96,10 @@ sub parse_line ($$) {
 
 sub parse_expr ($) {
     local *_ = \($_[0]);
+
+    # trim
+    s/(?:^\s+|\s+$)//gs;
+
     my @toplevel;
     while (1) {
         if (/\G \s* (?<= [\}\)\s] ) ([-+*\/]) (?= [\{\(\s] ) \s*/gcx) {
