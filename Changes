@@ -1,3 +1,10 @@
+0.024
+- tonodes: added rsync archive, update and compress mode. (liseen)
+- fornodes: trim expressions when parsing them. (liseen)
+- atnodes: added the use-tty option.
+- fornodes: now we automatically create a default ~/.fornodesrc when it's missing.
+- atnodes: added the "StrictHostChecking no" option for the first login.
+
 0.023
 - key2nodes: more examples added to SYNOPSIS in its POD. thanks cnhackTNT++.
 - added repository address into Makefile.PL, thanks Alexandr Ciornii.
