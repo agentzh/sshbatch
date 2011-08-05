@@ -72,7 +72,7 @@ sub parse_line ($$) {
     my $rcfile = $_[1];
     if (/^\s*([^=\s]*)\s*=\s*(.*)/) {
         my ($var, $def) = ($1, $2);
-        if ($var !~ /^[-\w]+$/) {
+        if ($var !~ /^\S+$/) {
             die "Invalid variable name in $rcfile, line $.: ",
                 "$var\n";
         }
@@ -179,7 +179,7 @@ sub parse_term ($) {
     local *_ = \($_[0]);
     if (/^ \{ ( [^}\s]* ) \} $/x) {
         my $var = $1;
-        if ($var !~ /^[-\w]+$/) {
+        if ($var !~ /^\S+$/) {
             die "Invalid variable name in term $_: $var\n";
         }
         my $set = $Vars{$var};
