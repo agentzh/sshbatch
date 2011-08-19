@@ -47,6 +47,9 @@ SYNOPSIS
             # or prompt for password if sudo required...
             $ atnodes 'sudo apachectl restart' '{ps}' -w
 
+            # run sudo command if tty required...
+            $ atnodes -tty 'sudo apachectl restart' '{ps}'
+
             # or specify a timeout:
             $ atnodes 'ping foo.com' '{ps}' -t 3
 
@@ -188,9 +191,9 @@ TIPS
 
           sudo: sorry, you must have a tty to run sudo
 
-        then you should probably comment out the "Defaults requiretty" line
-        in your server's /etc/sudoers file (or just do this for your own
-        account).
+        then you should add option -tty, or you can probably comment out the
+        "Defaults requiretty" line in your server's /etc/sudoers file (best
+        just to do this for your own account).
 
     Passing custom options to the underlying "ssh"
         By default, "atnodes" relies on Net::OpenSSH to locate the OpenSSH

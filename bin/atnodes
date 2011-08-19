@@ -312,6 +312,9 @@ atnodes - Run commands on clusters
     # or prompt for password if sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
 
+    # run sudo command if tty required...
+    $ atnodes -tty 'sudo apachectl restart' '{ps}'
+
     # or specify a timeout:
     $ atnodes 'ping foo.com' '{ps}' -t 3
 
