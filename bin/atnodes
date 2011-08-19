@@ -19,7 +19,7 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout, $verbose, $ask_for_pass);
+my ($user, $port, $timeout, $verbose, $ask_for_pass, $ask_for_passphrase);
 my $concurrency = 20;
 my (@cmd, @exprs, $ssh_cmd);
 $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
@@ -57,6 +57,8 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
+        } elsif ($group eq 'P') {
+            $ask_for_passphrase = 1;
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
         } elsif ($group eq 'ssh') {
@@ -122,8 +124,19 @@ if ($list_hosts_only) {
     exit(0);
 }
 
-my $password;
-if ($ask_for_pass) {
+my ($passphrase, $password);
+if ($ask_for_passphrase) {
+    print STDERR "Passphrase:";
+    ReadMode(2);
+    while (not defined ($passphrase = ReadLine(0))) {
+    }
+    ReadMode(0);
+    print "\n";
+    chomp $passphrase;
+    if (!$passphrase) {
+        die "No passphrase specified.\n";
+    }
+} elsif ($ask_for_pass) {
     print STDERR "Password:";
     ReadMode(2);
     while (not defined ($password = ReadLine(0))) {
@@ -151,6 +164,7 @@ while (1) {
             defined $timeout ? (timeout => $timeout) : (),
             defined $user ? (user => $user) : (),
             defined $port ? (port => $port) : (),
+            defined $passphrase ? (passphrase => $passphrase) : (),
             defined $password ? (password => $password) : (),
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
         );
@@ -276,6 +290,7 @@ OPTIONS:
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+    -P            Prompt for passphrase (used for login).
     -tty          Pseudo-tty.
 _EOC_
     if ($exit_code == 0) {
@@ -312,6 +327,9 @@ atnodes - Run commands on clusters
     # or prompt for password if sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
 
+    # use -P to prompt for passphrase (no echo back)
+    $ atnodes hostname '{ps}' -u agentz -P
+
     # run sudo command if tty required...
     $ atnodes -tty 'sudo apachectl restart' '{ps}'
 
@@ -338,6 +356,7 @@ atnodes - Run commands on clusters
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+    -P            Prompt for passphrase (used for login).
     -tty          Use pseudo-tty.
 
 =head1 PREREQUISITES

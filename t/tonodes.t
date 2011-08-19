@@ -63,6 +63,7 @@ OPTIONS:
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used mostly for login and sudo).
+    -P            Prompt for passphrase (used mostly for login).
 
 --- status: 1
 
@@ -168,6 +169,7 @@ OPTIONS:
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used mostly for login and sudo).
+    -P            Prompt for passphrase (used mostly for login).
 --- err
 --- status: 0
 

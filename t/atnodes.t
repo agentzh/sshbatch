@@ -54,6 +54,7 @@ OPTIONS:
     -u <user>     User account for SSH login.
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo).
+    -P            Prompt for passphrase (used for login).
     -tty          Pseudo-tty.
 
 --- status: 1
