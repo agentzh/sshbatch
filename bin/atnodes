@@ -126,24 +126,30 @@ if ($list_hosts_only) {
 
 my ($passphrase, $password);
 if ($ask_for_passphrase) {
-    print STDERR "Passphrase:";
-    ReadMode(2);
-    while (not defined ($passphrase = ReadLine(0))) {
+    $passphrase = $ENV{SSH_BATCH_PASSPHRASE};
+    if (!$passphrase) {
+        print STDERR "Passphrase:";
+        ReadMode(2);
+        while (not defined ($passphrase = ReadLine(0))) {
+        }
+        ReadMode(0);
+        print "\n";
+        chomp $passphrase;
     }
-    ReadMode(0);
-    print "\n";
-    chomp $passphrase;
     if (!$passphrase) {
         die "No passphrase specified.\n";
     }
 } elsif ($ask_for_pass) {
-    print STDERR "Password:";
-    ReadMode(2);
-    while (not defined ($password = ReadLine(0))) {
+    $password = $ENV{SSH_BATCH_PASSWORD};
+    if (!$password) {
+        print STDERR "Password:";
+        ReadMode(2);
+        while (not defined ($password = ReadLine(0))) {
+        }
+        ReadMode(0);
+        print "\n";
+        chomp $password;
     }
-    ReadMode(0);
-    print "\n";
-    chomp $password;
     if (!$password) {
         die "No password specified.\n";
     }
@@ -277,7 +283,8 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
-    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
+    -c <num>      Set SSH concurrency limit. (default: 20,
+                  when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -289,8 +296,10 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
-    -P            Prompt for passphrase (used for login).
+    -w            Prompt for password (used for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
 _EOC_
     if ($exit_code == 0) {
@@ -343,7 +352,8 @@ atnodes - Run commands on clusters
 
 =head1 OPTIONS
 
-    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
+    -c <num>      Set SSH concurrency limit. (default: 20,
+                  when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -355,9 +365,11 @@ atnodes - Run commands on clusters
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
-    -P            Prompt for passphrase (used for login).
-    -tty          Use pseudo-tty.
+    -w            Prompt for password (used for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
+    -tty          Pseudo-tty.
 
 =head1 PREREQUISITES
 
