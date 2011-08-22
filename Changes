@@ -1,3 +1,15 @@
+0.026
+- update variable format check to \w[-\.\w]*
+0.025
+- added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
+- added passphrase support
+- added some doc for tty option
+0.024
+- added rsync archive, update and compress mode
+- trim expr when parse expr
+- added tty option for atnodes
+- auto create .fornodesrc
+- added StrictHostChecking option for key2nodes
 0.023
 - key2nodes: more examples added to SYNOPSIS in its POD. thanks cnhackTNT++.
 - added repository address into Makefile.PL, thanks Alexandr Ciornii.
