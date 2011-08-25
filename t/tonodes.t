@@ -62,8 +62,10 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used mostly for login and sudo).
-
+    -w            Prompt for password (used mostly for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used mostly for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
 --- status: 1
 
 
@@ -167,7 +169,10 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used mostly for login and sudo).
+    -w            Prompt for password (used mostly for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used mostly for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
 --- err
 --- status: 0
 

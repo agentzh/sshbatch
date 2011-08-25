@@ -41,7 +41,8 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
-    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
+    -c <num>      Set SSH concurrency limit. (default: 20,
+                  when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -53,9 +54,11 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
+    -w            Prompt for password (used for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
-
 --- status: 1
 
 

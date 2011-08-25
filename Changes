@@ -1,3 +1,9 @@
+0.025
+- update variable format check to \w[-\.\w]*
+- added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
+- added passphrase support
+- added some doc for tty option
+
 0.024
 - tonodes: added rsync archive, update and compress mode. (liseen)
 - fornodes: trim expressions when parsing them. (liseen)

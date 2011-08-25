@@ -3,7 +3,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.024';
+our $VERSION = '0.025';
 
 1;
 __END__
@@ -62,6 +62,9 @@ Run command on clusters. (atnodes calls fornodes internally.)
 
     # or prompt for password if sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
+
+    # run sudo command if tty required...
+    $ atnodes -tty 'sudo apachectl restart' '{ps}'
 
     # or specify a timeout:
     $ atnodes 'ping foo.com' '{ps}' -t 3
@@ -188,7 +191,7 @@ If you see the following error message while doing sudo with L<atnodes>
 
   sudo: sorry, you must have a tty to run sudo
 
-then you should probably comment out the "Defaults requiretty" line in your server's F</etc/sudoers> file (or just do this for your own account).
+then you should add option -tty, or you can probably comment out the "Defaults requiretty" line in your server's F</etc/sudoers> file (best just to do this for your own account).
 
 =item Passing custom options to the underlying C<ssh>
 

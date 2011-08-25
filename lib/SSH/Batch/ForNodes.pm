@@ -27,11 +27,14 @@ sub clear_universe () {
 }
 
 sub init_rc () {
-    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
-    if (!defined $home || !-d $home) {
-        die "Can't find the home for the current user.\n";
-    }
-    my $rcfile = "$home/.fornodesrc";
+	my $rcfile = $ENV{SSH_BATCH_RC} || q();
+	if(! $rcfile){
+	    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
+	    if (!defined $home || !-d $home) {
+	        die "Can't find the home for the current user.\n";
+	    }
+	    $rcfile = "$home/.fornodesrc";
+	}
 
     # auto create $rcfile if $rcfile not exists
     if (! -e $rcfile) {
@@ -72,7 +75,7 @@ sub parse_line ($$) {
     my $rcfile = $_[1];
     if (/^\s*([^=\s]*)\s*=\s*(.*)/) {
         my ($var, $def) = ($1, $2);
-        if ($var !~ /^\S+$/) {
+        if ($var !~ /^\w[-\.\w]*$/) {
             die "Invalid variable name in $rcfile, line $.: ",
                 "$var\n";
         }
@@ -179,7 +182,7 @@ sub parse_term ($) {
     local *_ = \($_[0]);
     if (/^ \{ ( [^}\s]* ) \} $/x) {
         my $var = $1;
-        if ($var !~ /^\S+$/) {
+        if ($var !~ /^\w[-\.\w]*$/) {
             die "Invalid variable name in term $_: $var\n";
         }
         my $set = $Vars{$var};

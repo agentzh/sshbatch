@@ -19,7 +19,7 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout, $verbose, $ask_for_pass);
+my ($user, $port, $timeout, $verbose, $ask_for_pass, $ask_for_passphrase);
 my $concurrency = 20;
 my (@cmd, @exprs, $ssh_cmd);
 $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
@@ -57,6 +57,8 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
+        } elsif ($group eq 'P') {
+            $ask_for_passphrase = 1;
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
         } elsif ($group eq 'ssh') {
@@ -122,15 +124,32 @@ if ($list_hosts_only) {
     exit(0);
 }
 
-my $password;
-if ($ask_for_pass) {
-    print STDERR "Password:";
-    ReadMode(2);
-    while (not defined ($password = ReadLine(0))) {
+my ($passphrase, $password);
+if ($ask_for_passphrase) {
+    $passphrase = $ENV{SSH_BATCH_PASSPHRASE};
+    if (!$passphrase) {
+        print STDERR "Passphrase:";
+        ReadMode(2);
+        while (not defined ($passphrase = ReadLine(0))) {
+        }
+        ReadMode(0);
+        print "\n";
+        chomp $passphrase;
     }
-    ReadMode(0);
-    print "\n";
-    chomp $password;
+    if (!$passphrase) {
+        die "No passphrase specified.\n";
+    }
+} elsif ($ask_for_pass) {
+    $password = $ENV{SSH_BATCH_PASSWORD};
+    if (!$password) {
+        print STDERR "Password:";
+        ReadMode(2);
+        while (not defined ($password = ReadLine(0))) {
+        }
+        ReadMode(0);
+        print "\n";
+        chomp $password;
+    }
     if (!$password) {
         die "No password specified.\n";
     }
@@ -151,6 +170,7 @@ while (1) {
             defined $timeout ? (timeout => $timeout) : (),
             defined $user ? (user => $user) : (),
             defined $port ? (port => $port) : (),
+            defined $passphrase ? (passphrase => $passphrase) : (),
             defined $password ? (password => $password) : (),
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
         );
@@ -263,7 +283,8 @@ USAGE:
     atnodes [OPTIONS] COMMAND HOST_PATTERN... [OPTIONS]
 
 OPTIONS:
-    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
+    -c <num>      Set SSH concurrency limit. (default: 20,
+                  when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -275,7 +296,10 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
+    -w            Prompt for password (used for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
 _EOC_
     if ($exit_code == 0) {
@@ -312,6 +336,12 @@ atnodes - Run commands on clusters
     # or prompt for password if sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
 
+    # use -P to prompt for passphrase (no echo back)
+    $ atnodes hostname '{ps}' -u agentz -P
+
+    # run sudo command if tty required...
+    $ atnodes -tty 'sudo apachectl restart' '{ps}'
+
     # or specify a timeout:
     $ atnodes 'ping foo.com' '{ps}' -t 3
 
@@ -322,7 +352,8 @@ atnodes - Run commands on clusters
 
 =head1 OPTIONS
 
-    -c <num>      Set SSH concurrency limit. (default: 20, when -tty is on, this setting will no use)
+    -c <num>      Set SSH concurrency limit. (default: 20,
+                  when -tty is on, this setting will no use)
     -h            Print this help.
     -l            List the hosts and do nothing else.
     -L            Use the line-mode output format, i.e., prefixing
@@ -334,8 +365,11 @@ atnodes - Run commands on clusters
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo).
-    -tty          Use pseudo-tty.
+    -w            Prompt for password (used for login and sudo,
+                  could be privided by SSH_BATCH_PASSWORD).
+    -P            Prompt for passphrase (used for login,
+                  could be privided by SSH_BATCH_PASSPHRASE).
+    -tty          Pseudo-tty.
 
 =head1 PREREQUISITES
 

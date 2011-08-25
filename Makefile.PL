@@ -8,6 +8,8 @@ author              ('Agent Zhang <agentzh@yahoo.cn>');
 perl_version        ('5.006001');
 all_from            ('lib/SSH/Batch.pm');
 
+repository 'http://github.com/agentzh/sshbatch';
+
 requires            ('Set::Scalar'   => '1.23');
 requires            ('File::HomeDir');
 requires            ('Net::OpenSSH'  => '0.34');
@@ -28,6 +30,5 @@ install_script      ('bin/tonodes');
 install_script      ('bin/key2nodes');
 
 auto_install();
-repository 'http://github.com/agentzh/sshbatch';
 WriteAll();
 
