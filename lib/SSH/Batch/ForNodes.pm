@@ -289,6 +289,8 @@ SSH::Batch::ForNodes - Expand set arithmetic expression to host list
     use SSH::Batch::ForNodes;
 
     SSH::Batch::ForNodes::init_rc();
+        # read the config file from env SSH_BATCH_RC or directly ~/.fornodesrc
+
     my $set = SSH::Batch::ForNodes::parse_expr($expr);
     # set is a Set::Scalar instance:
     for my $host (sort $set->elements) {
@@ -309,7 +311,7 @@ Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
 
 =back
 
-=head1 COPYRIGHT AND LICENSE
+=head1 COPYRIGHT & LICENSE
 
 This module as well as its programs are licensed under the BSD License.
 

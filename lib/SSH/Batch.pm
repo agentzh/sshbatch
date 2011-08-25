@@ -99,7 +99,7 @@ System administration (sysadmin) is also part of my C<$work>. Playing with a (bi
 
 This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, L<tonodes>, and L<key2nodes>.
 
-C<SSH::Batch> allows you to name your clusters using variables and interval/set syntax in your F<~/.fornodesrc> config file. For instance:
+C<SSH::Batch> allows you to name your clusters using variables and interval/set syntax in your F<~/.fornodesrc> config file (or a different file name specified by the C<SSH_BATCH_RC> environment). For instance:
 
     $ cat ~/.fornodesrc
     A=foo[01-03].com bar.org
@@ -249,6 +249,12 @@ You may have already learned that you can use the C<-u> and C<-p> options to spe
     B=jim@foo[26-28].com:12345
 
     $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
+
+It's also possible to specify a different rc config file than F<~/.fornodesrc> via the environment variable C<SSH_BATCH_RC>. For example,
+
+    export SSH_BATCH_RC=/opt/my-fornodes-rc
+
+then the file F</opt/my-fornodes-rc> will be used instead of the default F<~/.fornodesrc> file.
 
 =item Use C<-L> to help grepping the outputs by hostname
 
