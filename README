@@ -342,11 +342,11 @@ INSTALLATION
 
     Win32 users should replace "make" with "nmake".
 
-SOURCE CONTROL
-    You can always get the latest SSH::Batch source from its public Git
+CODE REPOSITORY
+    You can always get the latest "SSH::Batch" source from its public Git
     repository:
 
-        http://github.com/agentzh/sshbatch/tree/master
+    <http://github.com/agentzh/sshbatch>
 
     If you have a branch for me to pull, please let me know ;)
 
@@ -366,7 +366,7 @@ TODO
 AUTHORS
     *   Zhang "agentzh" Yichun (章亦春) "<agentzh@gmail.com>"
 
-    *   Liseen Wan (万珣新)
+    *   Liseen Wan (万珣新) "<liseen.wan@gmail.com>"
 
 COPYRIGHT & LICENSE
     This module as well as its programs are licensed under the BSD License.
