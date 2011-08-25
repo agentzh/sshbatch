@@ -1,12 +1,16 @@
+# vim:set ft=perl ts=4 sw=4 et
+
 package SSH::Batch;
 
 use strict;
 use warnings;
 
-our $VERSION = '0.025';
+our $VERSION = '0.027';
 
 1;
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -14,7 +18,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.025 released on 25 August 2011.
+This document describes SSH::Batch 0.027 released on 25 August 2011.
 
 =head1 SYNOPSIS
 
@@ -367,18 +371,27 @@ localhost.
 
 =back
 
-=head1 SEE ALSO
+=head1 AUTHORS
 
-L<fornodes>, L<atnodes>, L<tonodes>, L<key2nodes>,
-L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
+=over
 
-=head1 COPYRIGHT AND LICENSE
+=item *
+
+Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
+
+=item *
+
+Liseen Wan (万珣新)
+
+=back
+
+=head1 COPYRIGHT & LICENSE
 
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
 
-Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -399,4 +412,9 @@ Neither the name of the Yahoo! China EEEE Works, Alibaba Inc. nor the names of i
 =back
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=head1 SEE ALSO
+
+L<fornodes>, L<atnodes>, L<tonodes>, L<key2nodes>,
+L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
 

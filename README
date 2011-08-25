@@ -3,7 +3,7 @@ NAME
     arithmetic
 
 VERSION
-    This document describes SSH::Batch 0.025 released on 25 August 2011.
+    This document describes SSH::Batch 0.027 released on 25 August 2011.
 
 SYNOPSIS
     The following scripts are provided:
@@ -363,17 +363,19 @@ TODO
     *   Add the betweennodes script to transfer files between clusters
         through localhost.
 
-SEE ALSO
-    fornodes, atnodes, tonodes, key2nodes, SSH::Batch::ForNodes,
-    Net::OpenSSH.
+AUTHORS
+    *   Zhang "agentzh" Yichun (章亦春) "<agentzh@gmail.com>"
 
-COPYRIGHT AND LICENSE
+    *   Liseen Wan (万珣新)
+
+COPYRIGHT & LICENSE
     This module as well as its programs are licensed under the BSD License.
 
     Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights
     reserved.
 
-    Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+    Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights
+    reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -402,4 +404,8 @@ COPYRIGHT AND LICENSE
     LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+SEE ALSO
+    fornodes, atnodes, tonodes, key2nodes, SSH::Batch::ForNodes,
+    Net::OpenSSH.
 

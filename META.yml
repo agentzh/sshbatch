@@ -1,7 +1,7 @@
 ---
 abstract: 'Cluster operations based on parallel SSH, set and interval arithmetic'
 author:
-  - 'Agent Zhang <agentzh@yahoo.cn>'
+  - "Zhang \"agentzh\" Yichun <agentzh@gmail.com>"
 build_requires:
   ExtUtils::MakeMaker: 6.42
   IPC::Run3: 0
@@ -30,4 +30,4 @@ requires:
 resources:
   license: http://opensource.org/licenses/bsd-license.php
   repository: http://github.com/agentzh/sshbatch
-version: 0.025
+version: 0.027

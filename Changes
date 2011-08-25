@@ -1,4 +1,4 @@
-0.025
+0.027
 - update variable format check to \w[-\.\w]*
 - added the SSH_BATCH_PASSPHRASE environment for -P and
   SSH_BATCH_PASSWORD env for -w
