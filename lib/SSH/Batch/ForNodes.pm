@@ -27,11 +27,14 @@ sub clear_universe () {
 }
 
 sub init_rc () {
-    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
-    if (!defined $home || !-d $home) {
-        die "Can't find the home for the current user.\n";
-    }
-    my $rcfile = "$home/.fornodesrc";
+	my $rcfile = $ENV{SSH_BATCH_RC} || q();
+	if(! $rcfile){
+	    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
+	    if (!defined $home || !-d $home) {
+	        die "Can't find the home for the current user.\n";
+	    }
+	    $rcfile = "$home/.fornodesrc";
+	}
 
     # auto create $rcfile if $rcfile not exists
     if (! -e $rcfile) {
