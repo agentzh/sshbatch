@@ -80,7 +80,8 @@ DESCRIPTION
     operations: fornodes, atnodes, tonodes, and key2nodes.
 
     "SSH::Batch" allows you to name your clusters using variables and
-    interval/set syntax in your ~/.fornodesrc config file. For instance:
+    interval/set syntax in your ~/.fornodesrc config file (or a different
+    file name specified by the "SSH_BATCH_RC" environment). For instance:
 
         $ cat ~/.fornodesrc
         A=foo[01-03].com bar.org
@@ -256,6 +257,15 @@ TIPS
             B=jim@foo[26-28].com:12345
 
             $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
+
+        It's also possible to specify a different rc config file than
+        ~/.fornodesrc via the environment variable "SSH_BATCH_RC". For
+        example,
+
+            export SSH_BATCH_RC=/opt/my-fornodes-rc
+
+        then the file /opt/my-fornodes-rc will be used instead of the
+        default ~/.fornodesrc file.
 
     Use "-L" to help grepping the outputs by hostname
         When managing hundreds or even thousands of machines, it's often
