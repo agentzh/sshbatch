@@ -337,12 +337,11 @@ There's no spesial requirement on the server side ssh service. Even a non-OpenSS
 
 Win32 users should replace "make" with "nmake".
 
-=head1 SOURCE CONTROL
+=head1 CODE REPOSITORY
 
-You can always get the latest SSH::Batch source from its
-public Git repository:
+You can always get the latest C<SSH::Batch> source from its public Git repository:
 
-    http://github.com/agentzh/sshbatch/tree/master
+L<http://github.com/agentzh/sshbatch>
 
 If you have a branch for me to pull, please let me know ;)
 
@@ -381,7 +380,7 @@ Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
 
 =item *
 
-Liseen Wan (万珣新)
+Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
 
 =back
 

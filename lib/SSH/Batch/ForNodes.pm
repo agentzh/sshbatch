@@ -305,7 +305,7 @@ Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
 
 =item *
 
-Liseen Wan (万珣新)
+Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
 
 =back
 
