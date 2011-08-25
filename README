@@ -3,7 +3,7 @@ NAME
     arithmetic
 
 VERSION
-    This document describes SSH::Batch 0.024 released on Nov 1, 2010.
+    This document describes SSH::Batch 0.025 released on 25 August 2011.
 
 SYNOPSIS
     The following scripts are provided:
@@ -46,9 +46,6 @@ SYNOPSIS
 
             # or prompt for password if sudo required...
             $ atnodes 'sudo apachectl restart' '{ps}' -w
-
-            # use -P to prompt for passphrase (no echo back)
-            $ atnodes hostname '{ps}' -u agentz -P
 
             # run sudo command if tty required...
             $ atnodes -tty 'sudo apachectl restart' '{ps}'

@@ -1,6 +1,7 @@
 0.025
 - update variable format check to \w[-\.\w]*
-- added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
+- added the SSH_BATCH_PASSPHRASE environment for -P and
+  SSH_BATCH_PASSWORD env for -w
 - added passphrase support
 - added some doc for tty option
 
