@@ -315,7 +315,6 @@ _EOC_
     }
 }
 
-<<<<<<< HEAD
 sub check_openssh_version ($) {
     my $ssh_cmd = shift;
 
@@ -328,8 +327,6 @@ sub check_openssh_version ($) {
     }
 }
 
-=======
->>>>>>> 94cfb1830ce1483c564184835923436b1e4bdfce
 __END__
 
 =encoding utf-8
