@@ -10,8 +10,10 @@ use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
 use Time::HiRes qw/sleep/;
+use IPC::Open3;
 
 sub help ($);
+sub check_openssh_version ($);
 
 if (!@ARGV) {
     warn "No argument specified.\n\n";
@@ -92,6 +94,8 @@ if ($verbose) {
         warn "Using SSH program [$ssh_cmd].\n";
     }
 }
+
+check_openssh_version($ssh_cmd || 'ssh');
 
 if ($use_tty) {
     $concurrency = 1;
@@ -310,6 +314,19 @@ _EOC_
         exit($exit_code);
     }
 }
+
+sub check_openssh_version ($) {
+    my $ssh_cmd = shift;
+
+    my $version_info = `$ssh_cmd -V 2>&1`;
+    if ($version_info && $version_info =~ /^OpenSSH_([\d\.]+)/) {
+        my $v = $1;
+        if ($v && $v < 4.1) {
+            die "OpenSSH version $v, should be >= 4.1!\n";
+        }
+    }
+}
+
 __END__
 
 =head1 NAME
