@@ -319,7 +319,7 @@ sub check_openssh_version ($) {
     my $ssh_cmd = shift;
 
     my $version_info = `$ssh_cmd -V 2>&1`;
-    if ($version_info && $version_info =~ /^OpenSSH_([\d\.]+)/) {
+    if ($version_info && $version_info =~ /^OpenSSH_(\d+\.\d+)/) {
         my $v = $1;
         if ($v && $v < 4.1) {
             die "OpenSSH version $v, should be >= 4.1!\n";
