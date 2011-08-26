@@ -1,3 +1,7 @@
+0.028
+- atnodes: clean tmp file
+- atnodes: check openssh version >= 4.1
+
 0.025
 - update variable format check to \w[-\.\w]*
 - added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
