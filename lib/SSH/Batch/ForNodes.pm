@@ -1,9 +1,11 @@
+# vim:set ft=perl ts=4 sw=4 et
+
 package SSH::Batch::ForNodes;
 
 use strict;
 use warnings;
 
-our $VERSION = '0.024';
+our $VERSION = '0.027';
 
 use Set::Scalar;
 use File::HomeDir;
@@ -27,14 +29,14 @@ sub clear_universe () {
 }
 
 sub init_rc () {
-	my $rcfile = $ENV{SSH_BATCH_RC} || q();
-	if(! $rcfile){
-	    my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
-	    if (!defined $home || !-d $home) {
-	        die "Can't find the home for the current user.\n";
-	    }
-	    $rcfile = "$home/.fornodesrc";
-	}
+    my $rcfile = $ENV{SSH_BATCH_RC} || q();
+    if(! $rcfile){
+        my $home = $ENV{SSH_BATCH_HOME} || File::HomeDir->my_home;
+        if (!defined $home || !-d $home) {
+            die "Can't find the home for the current user.\n";
+        }
+        $rcfile = "$home/.fornodesrc";
+    }
 
     # auto create $rcfile if $rcfile not exists
     if (! -e $rcfile) {
@@ -275,6 +277,8 @@ sub expand_wildcards ($) {
 1;
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 SSH::Batch::ForNodes - Expand set arithmetic expression to host list
@@ -285,23 +289,35 @@ SSH::Batch::ForNodes - Expand set arithmetic expression to host list
     use SSH::Batch::ForNodes;
 
     SSH::Batch::ForNodes::init_rc();
+        # read the config file from env SSH_BATCH_RC or directly ~/.fornodesrc
+
     my $set = SSH::Batch::ForNodes::parse_expr($expr);
     # set is a Set::Scalar instance:
     for my $host (sort $set->elements) {
         print "$host\n";
     }
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Agent Zhang (agentzh) C<< <agentzh@yahoo.cn> >>
+=over
 
-=head1 COPYRIGHT AND LICENSE
+=item *
+
+Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
+
+=item *
+
+Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
+
+=back
+
+=head1 COPYRIGHT & LICENSE
 
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
 
-Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

@@ -3,7 +3,7 @@ NAME
     arithmetic
 
 VERSION
-    This document describes SSH::Batch 0.024 released on Nov 1, 2010.
+    This document describes SSH::Batch 0.027 released on 25 August 2011.
 
 SYNOPSIS
     The following scripts are provided:
@@ -47,9 +47,6 @@ SYNOPSIS
             # or prompt for password if sudo required...
             $ atnodes 'sudo apachectl restart' '{ps}' -w
 
-            # use -P to prompt for passphrase (no echo back)
-            $ atnodes hostname '{ps}' -u agentz -P
-
             # run sudo command if tty required...
             $ atnodes -tty 'sudo apachectl restart' '{ps}'
 
@@ -83,7 +80,8 @@ DESCRIPTION
     operations: fornodes, atnodes, tonodes, and key2nodes.
 
     "SSH::Batch" allows you to name your clusters using variables and
-    interval/set syntax in your ~/.fornodesrc config file. For instance:
+    interval/set syntax in your ~/.fornodesrc config file (or a different
+    file name specified by the "SSH_BATCH_RC" environment). For instance:
 
         $ cat ~/.fornodesrc
         A=foo[01-03].com bar.org
@@ -260,6 +258,15 @@ TIPS
 
             $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
 
+        It's also possible to specify a different rc config file than
+        ~/.fornodesrc via the environment variable "SSH_BATCH_RC". For
+        example,
+
+            export SSH_BATCH_RC=/opt/my-fornodes-rc
+
+        then the file /opt/my-fornodes-rc will be used instead of the
+        default ~/.fornodesrc file.
+
     Use "-L" to help grepping the outputs by hostname
         When managing hundreds or even thousands of machines, it's often
         more convenient to "grep" over the outputs of atnodes or tonodes by
@@ -345,11 +352,11 @@ INSTALLATION
 
     Win32 users should replace "make" with "nmake".
 
-SOURCE CONTROL
-    You can always get the latest SSH::Batch source from its public Git
+CODE REPOSITORY
+    You can always get the latest "SSH::Batch" source from its public Git
     repository:
 
-        http://github.com/agentzh/sshbatch/tree/master
+    <http://github.com/agentzh/sshbatch>
 
     If you have a branch for me to pull, please let me know ;)
 
@@ -366,17 +373,19 @@ TODO
     *   Add the betweennodes script to transfer files between clusters
         through localhost.
 
-SEE ALSO
-    fornodes, atnodes, tonodes, key2nodes, SSH::Batch::ForNodes,
-    Net::OpenSSH.
+AUTHORS
+    *   Zhang "agentzh" Yichun (章亦春) "<agentzh@gmail.com>"
 
-COPYRIGHT AND LICENSE
+    *   Liseen Wan (万珣新) "<liseen.wan@gmail.com>"
+
+COPYRIGHT & LICENSE
     This module as well as its programs are licensed under the BSD License.
 
     Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights
     reserved.
 
-    Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+    Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights
+    reserved.
 
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are
@@ -405,4 +414,8 @@ COPYRIGHT AND LICENSE
     LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+SEE ALSO
+    fornodes, atnodes, tonodes, key2nodes, SSH::Batch::ForNodes,
+    Net::OpenSSH.
 

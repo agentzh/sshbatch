@@ -1,12 +1,16 @@
+# vim:set ft=perl ts=4 sw=4 et
+
 package SSH::Batch;
 
 use strict;
 use warnings;
 
-our $VERSION = '0.025';
+our $VERSION = '0.027';
 
 1;
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -14,7 +18,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.024 released on Nov 1, 2010.
+This document describes SSH::Batch 0.027 released on 25 August 2011.
 
 =head1 SYNOPSIS
 
@@ -95,7 +99,7 @@ System administration (sysadmin) is also part of my C<$work>. Playing with a (bi
 
 This is a high-level abstraction over the powerful L<Net::OpenSSH> module. A bunch of handy scripts are provided to simplify big cluster operations: L<fornodes>, L<atnodes>, L<tonodes>, and L<key2nodes>.
 
-C<SSH::Batch> allows you to name your clusters using variables and interval/set syntax in your F<~/.fornodesrc> config file. For instance:
+C<SSH::Batch> allows you to name your clusters using variables and interval/set syntax in your F<~/.fornodesrc> config file (or a different file name specified by the C<SSH_BATCH_RC> environment). For instance:
 
     $ cat ~/.fornodesrc
     A=foo[01-03].com bar.org
@@ -246,6 +250,12 @@ You may have already learned that you can use the C<-u> and C<-p> options to spe
 
     $ atnodes 'ls -lh' '{B} + bob@bar[29-31].org:5678'
 
+It's also possible to specify a different rc config file than F<~/.fornodesrc> via the environment variable C<SSH_BATCH_RC>. For example,
+
+    export SSH_BATCH_RC=/opt/my-fornodes-rc
+
+then the file F</opt/my-fornodes-rc> will be used instead of the default F<~/.fornodesrc> file.
+
 =item Use C<-L> to help grepping the outputs by hostname
 
 When managing hundreds or even thousands of machines, it's often more
@@ -333,12 +343,11 @@ There's no spesial requirement on the server side ssh service. Even a non-OpenSS
 
 Win32 users should replace "make" with "nmake".
 
-=head1 SOURCE CONTROL
+=head1 CODE REPOSITORY
 
-You can always get the latest SSH::Batch source from its
-public Git repository:
+You can always get the latest C<SSH::Batch> source from its public Git repository:
 
-    http://github.com/agentzh/sshbatch/tree/master
+L<http://github.com/agentzh/sshbatch>
 
 If you have a branch for me to pull, please let me know ;)
 
@@ -367,18 +376,27 @@ localhost.
 
 =back
 
-=head1 SEE ALSO
+=head1 AUTHORS
 
-L<fornodes>, L<atnodes>, L<tonodes>, L<key2nodes>,
-L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
+=over
 
-=head1 COPYRIGHT AND LICENSE
+=item *
+
+Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
+
+=item *
+
+Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
+
+=back
+
+=head1 COPYRIGHT & LICENSE
 
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
 
-Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
@@ -399,4 +417,9 @@ Neither the name of the Yahoo! China EEEE Works, Alibaba Inc. nor the names of i
 =back
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=head1 SEE ALSO
+
+L<fornodes>, L<atnodes>, L<tonodes>, L<key2nodes>,
+L<SSH::Batch::ForNodes>, L<Net::OpenSSH>.
 
