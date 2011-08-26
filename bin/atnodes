@@ -10,7 +10,6 @@ use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
 use Time::HiRes qw/sleep/;
-use IPC::Open3;
 
 sub help ($);
 sub check_openssh_version ($);
@@ -316,6 +315,7 @@ _EOC_
     }
 }
 
+<<<<<<< HEAD
 sub check_openssh_version ($) {
     my $ssh_cmd = shift;
 
@@ -328,7 +328,11 @@ sub check_openssh_version ($) {
     }
 }
 
+=======
+>>>>>>> 94cfb1830ce1483c564184835923436b1e4bdfce
 __END__
+
+=encoding utf-8
 
 =head1 NAME
 
@@ -414,13 +418,27 @@ Please refer to L<SSH::Batch> for more documentation.
 
 L<fornodes>, L<tonodes>, L<key2nodes>, L<SSH::Batch>, L<Net::OpenSSH>.
 
-=head1 COPYRIGHT AND LICENSE
+=head1 AUTHORS
+
+=over
+
+=item *
+
+Zhang "agentzh" Yichun (章亦春) C<< <agentzh@gmail.com> >>
+
+=item *
+
+Liseen Wan (万珣新) C<< <liseen.wan@gmail.com> >>
+
+=back
+
+=head1 COPYRIGHT & LICENSE
 
 This module as well as its programs are licensed under the BSD License.
 
 Copyright (c) 2009, Yahoo! China EEEE Works, Alibaba Inc. All rights reserved.
 
-Copyright (C) 2009, Agent Zhang (agentzh). All rights reserved.
+Copyright (C) 2009, 2010, 2011, Zhang "agentzh" Yichun (章亦春). All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
