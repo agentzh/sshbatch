@@ -1,8 +1,12 @@
-0.025
-- update variable format check to \w[-\.\w]*
-- added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
-- added passphrase support
-- added some doc for tty option
+0.027
+- added support for the environment SSH_BATCH_RC to specify a
+  different file name than the default ~/.fornodesrc.
+  thanks Mithun Ayachit.
+- updated host variable format check to /\w[-\.\w]*/.
+- added the SSH_BATCH_PASSPHRASE environment for -P and
+  SSH_BATCH_PASSWORD env for -w.
+- added passphrase support.
+- added some doc for tty option.
 
 0.024
 - tonodes: added rsync archive, update and compress mode. (liseen)
