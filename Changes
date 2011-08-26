@@ -1,6 +1,6 @@
 0.028
-- atnodes: clean tmp file
-- atnodes: check openssh version >= 4.1
+- atnodes: fixed tmp file leaks.
+- atnodes: automatically check if openssh version >= 4.1
 
 0.027
 - added support for the environment SSH_BATCH_RC to specify a
@@ -10,13 +10,7 @@
 - added the SSH_BATCH_PASSPHRASE environment for -P and
   SSH_BATCH_PASSWORD env for -w.
 - added passphrase support.
-- added some doc for tty option.
-
-0.025
-- update variable format check to \w[-\.\w]*
-- added SSH_BATCH_PASSPHRASE for -P and SSH_BATCH_PASSWORD env for -w
-- added passphrase support
-- added some doc for tty option
+- added some docs for tty option.
 
 0.024
 - tonodes: added rsync archive, update and compress mode. (liseen)
