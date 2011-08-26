@@ -10,7 +10,6 @@ use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
 use Time::HiRes qw/sleep/;
-use IPC::Open3;
 
 sub help ($);
 sub check_openssh_version ($);
