@@ -3,12 +3,13 @@ abstract: 'Cluster operations based on parallel SSH, set and interval arithmetic
 author:
   - "Zhang \"agentzh\" Yichun <agentzh@gmail.com>"
 build_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.55
   IPC::Run3: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.42
+  ExtUtils::MakeMaker: 6.55
 distribution_type: module
-generated_by: 'Module::Install version 1.01'
+dynamic_config: 1
+generated_by: 'Module::Install version 1.04'
 license: bsd
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -26,8 +27,9 @@ requires:
   Net::OpenSSH: 0.34
   Set::Scalar: 1.23
   Term::ReadKey: 2.30
+  Time::HiRes: 0
   perl: 5.6.1
 resources:
   license: http://opensource.org/licenses/bsd-license.php
   repository: http://github.com/agentzh/sshbatch
-version: 0.028
+version: 0.029
