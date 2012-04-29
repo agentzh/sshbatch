@@ -29,6 +29,7 @@ my $fetch_value;
 my $found_sep;
 my $last_option;
 my $use_tty;
+my $use_quiet_mode;
 my $line_mode = $ENV{SSH_BATCH_LINE_MODE};
 for (@ARGV) {
     if (defined $fetch_value) {
@@ -68,6 +69,8 @@ for (@ARGV) {
             $line_mode = 1;
         } elsif ($group eq 'tty') {
             $use_tty = 1;
+        } elsif ($group eq 'q') {
+            $use_quiet_mode = 1;
         } else {
             die "Unknown option: $_\n";
         }
@@ -176,6 +179,9 @@ while (1) {
             defined $passphrase ? (passphrase => $passphrase) : (),
             defined $password ? (password => $password) : (),
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
+            $use_quiet_mode 
+            ? (master_opts => ["-q",], default_ssh_opts => ["-q",],)
+            : (),
         );
         if ($ssh->error) {
             if ($line_mode) {
@@ -305,6 +311,7 @@ OPTIONS:
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
+    -q            Run SSH in quiet mode
 _EOC_
     if ($exit_code == 0) {
         print $msg;
