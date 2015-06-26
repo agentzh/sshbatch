@@ -59,7 +59,9 @@ OPTIONS:
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
-    -q            Run SSH in quiet mode
+    -E            Use expect for input, such as password.
+    -tmout        Set timeout of expect.
+    -q            Run SSH in quiet mode.
 --- status: 1
 
 

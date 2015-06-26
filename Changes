@@ -1,3 +1,10 @@
+0.0291
+- atnodes: added '-E' and '-tmout' parameter to run expect mode.
+0.029
+- atnodes: added a '-q' parameter to run SSH in quiet mode,
+  which prevents banners and motd messages from being
+  displayed in the output. thanks Mithun Ayachit for the patch.
+
 0.028
 - atnodes: fixed tmp file leaks.
 - atnodes: automatically check if openssh version >= 4.1.
