@@ -16,6 +16,7 @@ requires            ('Net::OpenSSH'  => '0.34');
 requires            ('File::Temp');
 requires            ('Term::ReadKey' => '2.30');
 requires            ('IO::Pty');
+requires            ('Time::HiRes');
 
 build_requires      ('IPC::Run3');
 #build_requires      ('Test::Base' => '0.54');

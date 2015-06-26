@@ -10,6 +10,7 @@ use Term::ReadKey;
 use SSH::Batch::ForNodes;
 use File::Temp qw/ :POSIX /;
 use Time::HiRes qw/sleep/;
+use Expect;
 
 sub help ($);
 sub check_openssh_version ($);
@@ -30,6 +31,8 @@ my $found_sep;
 my $last_option;
 my $use_tty;
 my $use_quiet_mode;
+my $use_expect_mode;
+my $expect_timeout = 1;
 my $line_mode = $ENV{SSH_BATCH_LINE_MODE};
 for (@ARGV) {
     if (defined $fetch_value) {
@@ -71,6 +74,10 @@ for (@ARGV) {
             $use_tty = 1;
         } elsif ($group eq 'q') {
             $use_quiet_mode = 1;
+        } elsif ($group eq 'E') {
+            $use_expect_mode = 1;
+        } elsif ($group eq 'tmout') {
+            $fetch_value = sub { $expect_timeout = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -200,14 +207,30 @@ while (1) {
     for my $host (@active_hosts) {
         my ($out, $outfile) = tmpnam();
         my $ssh = $conns{$host};
-        my $pid = $ssh->system({
-                (defined $password?
-                    (stdin_data => "$password\n") : ()),
-            stdout_fh => $out,
-            stderr_to_stdout => 1,
-            async => 1,
-            defined $use_tty ? (tty => 1) : (),
-        }, @cmd);
+		my $pid;
+		my $pty;
+		if ($use_expect_mode && $use_expect_mode == 1) {
+			($pty, $pid) = $ssh->open2pty({'stderr_to_stdout' => 1}, @cmd);
+			my $expect = Expect->init($pty);
+			$expect->log_file($outfile, "w"); 
+			$expect->raw_pty(1);
+			$expect->expect($expect_timeout, ":");
+			if (defined $password) {
+				$expect->send("$password\n");
+			}
+			$expect->expect($expect_timeout, "\n");
+			$expect->raw_pty(0);
+			close $expect;
+		} else {
+			$pid = $ssh->system({
+					(defined $password?
+					 (stdin_data => "$password\n") : ()),
+					stdout_fh => $out,
+					stderr_to_stdout => 1,
+					async => 1,
+					defined $use_tty ? (tty => 1) : (),
+					}, @cmd);
+		}
         #warn "PID: $pid\n";
         if (!defined $pid or $pid == -1) {
             $active_count--;
@@ -311,7 +334,9 @@ OPTIONS:
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
-    -q            Run SSH in quiet mode
+    -E            Use expect for input, such as password.
+    -tmout        Set timeout of expect.
+    -q            Run SSH in quiet mode.
 _EOC_
     if ($exit_code == 0) {
         print $msg;

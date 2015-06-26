@@ -3,7 +3,7 @@ NAME
     arithmetic
 
 VERSION
-    This document describes SSH::Batch 0.028 released on 26 August 2011.
+    This document describes SSH::Batch 0.029 released on 29 April 2012.
 
 SYNOPSIS
     The following scripts are provided:

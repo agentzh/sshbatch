@@ -5,7 +5,7 @@ package SSH::Batch::ForNodes;
 use strict;
 use warnings;
 
-our $VERSION = '0.028';
+our $VERSION = '0.029';
 
 use Set::Scalar;
 use File::HomeDir;
