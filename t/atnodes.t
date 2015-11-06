@@ -56,6 +56,8 @@ OPTIONS:
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
+    -so           Use password only for sudo, not for login. Use when
+                  -w is on.
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
