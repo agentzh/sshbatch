@@ -59,8 +59,9 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
-        } elsif ($group eq 'so') {
+        } elsif ($group eq 'W') {
             $password_only_for_sudo = 1;
+            $ask_for_pass = 1;
         } elsif ($group eq 'P') {
             $ask_for_passphrase = 1;
         } elsif ($group eq 'c') {
@@ -311,8 +312,8 @@ OPTIONS:
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
-    -so           Use password only for sudo, not for login. Use when
-                  -w is on.
+    -W            Prompt for password (like -w, but used for sudo only,
+                  when -W is on, -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
@@ -368,7 +369,7 @@ atnodes - Run commands on clusters
     $ atnodes 'sudo apachectl restart' '{ps}' -w
 
     # or prompt for password for sudo only...
-    $ atnodes 'sudo apachectl restart' '{ps}' -so
+    $ atnodes 'sudo apachectl restart' '{ps}' -W
 
     # use -P to prompt for passphrase (no echo back)
     $ atnodes hostname '{ps}' -u agentz -P
@@ -401,8 +402,8 @@ atnodes - Run commands on clusters
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
-    -so           Use password only for sudo, not for login. Use when
-                  -w is on.
+    -W            Prompt for password (like -w, but used for sudo only,
+                  when -W is on, -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
