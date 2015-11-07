@@ -173,7 +173,7 @@ while (1) {
     while ($active_count < $concurrency) {
         last if !@hosts;
         my $host = shift @hosts;
-        my $login_with_password = (defined $password) && (!(defined $password_only_for_sudo));
+        my $login_with_password = (defined $password) && (!($password_only_for_sudo));
         my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,
@@ -312,8 +312,8 @@ OPTIONS:
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
-    -W            Prompt for password (like -w, but used for sudo only,
-                  when -W is on, -w will be ignored).
+    -W            Prompt for password (like -w but conflict, just for sudo.
+                  Never use -W together with -w, because -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
@@ -402,8 +402,8 @@ atnodes - Run commands on clusters
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
-    -W            Prompt for password (like -w, but used for sudo only,
-                  when -W is on, -w will be ignored).
+    -W            Prompt for password (like -w but conflict, just for sudo.
+                  Never use -W together with -w, because -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
