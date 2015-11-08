@@ -20,7 +20,7 @@ if (!@ARGV) {
 }
 
 my $list_hosts_only = 0;
-my ($user, $port, $timeout, $verbose, $ask_for_pass, $ask_for_passphrase);
+my ($user, $port, $timeout, $verbose, $ask_for_pass, $ask_for_pass_only_for_sudo, $ask_for_passphrase);
 my $concurrency = 20;
 my (@cmd, @exprs, $ssh_cmd);
 $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
@@ -59,6 +59,8 @@ for (@ARGV) {
             $verbose = 1;
         } elsif ($group eq 'w') {
             $ask_for_pass = 1;
+        } elsif ($group eq 'W') {
+            $ask_for_pass_only_for_sudo = 1;
         } elsif ($group eq 'P') {
             $ask_for_passphrase = 1;
         } elsif ($group eq 'c') {
@@ -79,6 +81,13 @@ for (@ARGV) {
     }
     push @exprs, $_;
 }
+
+if ($ask_for_pass && $ask_for_pass_only_for_sudo) {
+    die 
+      "ERROR: Option -w should not be used together with -W.
+       Use -w to use passowrd for login and sudo, -W for sudo only.\n";
+}
+
 if (defined $fetch_value) {
     die "ERROR: Option $last_option takes a value.\n";
 }
@@ -145,7 +154,7 @@ if ($ask_for_passphrase) {
     if (!$passphrase) {
         die "No passphrase specified.\n";
     }
-} elsif ($ask_for_pass) {
+} elsif ($ask_for_pass || $ask_for_pass_only_for_sudo) {
     $password = $ENV{SSH_BATCH_PASSWORD};
     if (!$password) {
         print STDERR "Password:";
@@ -170,6 +179,7 @@ while (1) {
     while ($active_count < $concurrency) {
         last if !@hosts;
         my $host = shift @hosts;
+        my $login_with_password = (defined $password) && !$ask_for_pass_only_for_sudo;
         my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,
@@ -177,7 +187,7 @@ while (1) {
             defined $user ? (user => $user) : (),
             defined $port ? (port => $port) : (),
             defined $passphrase ? (passphrase => $passphrase) : (),
-            defined $password ? (password => $password) : (),
+            $login_with_password ? (password => $password) : (),
             defined $ssh_cmd ? (ssh_cmd => $ssh_cmd) : (),
             $use_quiet_mode 
             ? (master_opts => ["-q",], default_ssh_opts => ["-q",],)
@@ -308,6 +318,8 @@ OPTIONS:
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
+    -W            Prompt for password (like -w but conflict, just for sudo.
+                  Never use -W together with -w, because -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
@@ -359,8 +371,11 @@ atnodes - Run commands on clusters
     # use -w to prompt for password if w/o SSH key (no echo back)
     $ atnodes hostname '{ps}' -u agentz -w
 
-    # or prompt for password if sudo required...
+    # or prompt for password if login and sudo required...
     $ atnodes 'sudo apachectl restart' '{ps}' -w
+
+    # or prompt for password for sudo only...
+    $ atnodes 'sudo apachectl restart' '{ps}' -W
 
     # use -P to prompt for passphrase (no echo back)
     $ atnodes hostname '{ps}' -u agentz -P
@@ -393,6 +408,8 @@ atnodes - Run commands on clusters
     -v            Be verbose.
     -w            Prompt for password (used for login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
+    -W            Prompt for password (like -w but conflict, just for sudo.
+                  Never use -W together with -w, because -w will be ignored).
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
