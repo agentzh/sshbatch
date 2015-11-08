@@ -27,6 +27,8 @@ Can't find the home for the current user.
 --- status: 0
 --- SKIP
 
+
+
 === TEST 3: no args given
 --- rc
 api=api01.foo.com api02.foo.com

@@ -30,6 +30,7 @@ Can't open **RC_FILE_PATH** for reading: No such file or directory
 --- SKIP
 
 
+
 === TEST 3: no expr given
 --- rc
 api=api01.foo.com api02.foo.com
