@@ -116,3 +116,10 @@ Cluster expression: foo.com
 Cluster set: foo.com
 --- status: 0
 
+=== TEST 9: -W and -w both show
+--- args: -w -W
+--- out
+--- err
+ERROR: Option -w should not be used together with -W.
+       Use -w to use passowrd for login and sudo, -W for sudo only.
+--- status: 1
