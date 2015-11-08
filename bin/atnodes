@@ -179,7 +179,7 @@ while (1) {
     while ($active_count < $concurrency) {
         last if !@hosts;
         my $host = shift @hosts;
-        my $login_with_password = (defined $password) && (!$ask_for_pass_only_for_sudo);
+        my $login_with_password = (defined $password) && !$ask_for_pass_only_for_sudo;
         my $ssh = Net::OpenSSH->new(
             $host,
             async => 1,

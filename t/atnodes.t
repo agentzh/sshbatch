@@ -116,6 +116,8 @@ Cluster expression: foo.com
 Cluster set: foo.com
 --- status: 0
 
+
+
 === TEST 9: -W and -w both show
 --- args: -w -W
 --- out
