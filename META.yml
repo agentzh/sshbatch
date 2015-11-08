@@ -32,4 +32,4 @@ requires:
 resources:
   license: http://opensource.org/licenses/bsd-license.php
   repository: http://github.com/agentzh/sshbatch
-version: '0.029'
+version: '0.030'

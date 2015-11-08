@@ -28,4 +28,4 @@ requires:
   Term::ReadKey: '2.30'
   Time::HiRes: '0'
   perl: '5.006001'
-version: '0.029'
+version: '0.030'

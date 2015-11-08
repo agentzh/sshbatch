@@ -5,7 +5,7 @@ package SSH::Batch;
 use strict;
 use warnings;
 
-our $VERSION = '0.029';
+our $VERSION = '0.030';
 
 1;
 __END__
@@ -18,7 +18,7 @@ SSH::Batch - Cluster operations based on parallel SSH, set and interval arithmet
 
 =head1 VERSION
 
-This document describes SSH::Batch 0.029 released on 29 April 2012.
+This document describes SSH::Batch 0.030 released on 8 November 2015.
 
 =head1 SYNOPSIS
 

@@ -1,3 +1,7 @@
+0.030
+- atnodes: added the -W option to atnodes to allow prompting
+  for passwords for sudo only. thanks JamesPan for the patch.
+
 0.029
 - atnodes: added a '-q' parameter to run SSH in quiet mode,
   which prevents banners and motd messages from being
