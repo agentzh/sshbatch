@@ -83,7 +83,9 @@ for (@ARGV) {
 }
 
 if ($ask_for_pass && $ask_for_pass_only_for_sudo) {
-    die "ERROR: Option -w should not be used together with -W. Use -w to use passowrd for login and sudo, -W for sudo only.\n";
+    die 
+      "ERROR: Option -w should not be used together with -W.
+       Use -w to use passowrd for login and sudo, -W for sudo only.\n";
 }
 
 if (defined $fetch_value) {
