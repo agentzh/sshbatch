@@ -3,11 +3,12 @@ package Module::AutoInstall;
 
 use strict;
 use Cwd                 ();
+use File::Spec          ();
 use ExtUtils::MakeMaker ();
 
 use vars qw{$VERSION};
 BEGIN {
-	$VERSION = '1.04';
+	$VERSION = '1.14';
 }
 
 # special map on pre-defined feature sets
@@ -114,7 +115,7 @@ sub import {
     print "*** $class version " . $class->VERSION . "\n";
     print "*** Checking for Perl dependencies...\n";
 
-    my $cwd = Cwd::cwd();
+    my $cwd = Cwd::getcwd();
 
     $Config = [];
 
@@ -165,7 +166,7 @@ sub import {
         $modules = [ %{$modules} ] if UNIVERSAL::isa( $modules, 'HASH' );
 
         unshift @$modules, -default => &{ shift(@$modules) }
-          if ( ref( $modules->[0] ) eq 'CODE' );    # XXX: bugward combatability
+          if ( ref( $modules->[0] ) eq 'CODE' );    # XXX: bugward compatibility
 
         while ( my ( $mod, $arg ) = splice( @$modules, 0, 2 ) ) {
             if ( $mod =~ m/^-(\w+)$/ ) {
@@ -187,7 +188,7 @@ sub import {
             }
 
             # XXX: check for conflicts and uninstalls(!) them.
-            my $cur = _load($mod);
+            my $cur = _version_of($mod);
             if (_version_cmp ($cur, $arg) >= 0)
             {
                 print "loaded. ($cur" . ( $arg ? " >= $arg" : '' ) . ")\n";
@@ -344,22 +345,26 @@ sub install {
     my $i;    # used below to strip leading '-' from config keys
     my @config = ( map { s/^-// if ++$i; $_ } @{ +shift } );
 
-    my ( @modules, @installed );
-    while ( my ( $pkg, $ver ) = splice( @_, 0, 2 ) ) {
+	my ( @modules, @installed, @modules_to_upgrade );
+	while (my ($pkg, $ver) = splice(@_, 0, 2)) {
 
-        # grep out those already installed
-        if ( _version_cmp( _load($pkg), $ver ) >= 0 ) {
-            push @installed, $pkg;
-        }
-        else {
-            push @modules, $pkg, $ver;
-        }
-    }
+		# grep out those already installed
+		if (_version_cmp(_version_of($pkg), $ver) >= 0) {
+			push @installed, $pkg;
+			if ($UpgradeDeps) {
+				push @modules_to_upgrade, $pkg, $ver;
+			}
+		}
+		else {
+			push @modules, $pkg, $ver;
+		}
+	}
 
-    if ($UpgradeDeps) {
-	push @modules, @installed;
-	@installed = ();
-    }
+	if ($UpgradeDeps) {
+		push @modules, @modules_to_upgrade;
+		@installed          = ();
+		@modules_to_upgrade = ();
+	}
 
     return @installed unless @modules;  # nothing to do
     return @installed if _check_lock(); # defer to the CPAN shell
@@ -392,7 +397,7 @@ sub install {
 
     # see if we have successfully installed them
     while ( my ( $pkg, $ver ) = splice( @modules, 0, 2 ) ) {
-        if ( _version_cmp( _load($pkg), $ver ) >= 0 ) {
+        if ( _version_cmp( _version_of($pkg), $ver ) >= 0 ) {
             push @installed, $pkg;
         }
         elsif ( $args{do_once} and open( FAILED, '>> .#autoinstall.failed' ) ) {
@@ -610,7 +615,7 @@ sub _under_cpan {
     require Cwd;
     require File::Spec;
 
-    my $cwd  = File::Spec->canonpath( Cwd::cwd() );
+    my $cwd  = File::Spec->canonpath( Cwd::getcwd() );
     my $cpan = File::Spec->canonpath( $CPAN::Config->{cpan_home} );
 
     return ( index( $cwd, $cpan ) > -1 );
@@ -621,7 +626,7 @@ sub _update_to {
     my $ver   = shift;
 
     return
-      if _version_cmp( _load($class), $ver ) >= 0;  # no need to upgrade
+      if _version_cmp( _version_of($class), $ver ) >= 0;  # no need to upgrade
 
     if (
         _prompt( "==> A newer version of $class ($ver) is required. Install?",
@@ -706,14 +711,28 @@ sub _can_write {
 
 # load a module and return the version it reports
 sub _load {
-    my $mod  = pop;    # class/instance doesn't matter
+    my $mod  = pop; # method/function doesn't matter
     my $file = $mod;
-
     $file =~ s|::|/|g;
     $file .= '.pm';
-
     local $@;
     return eval { require $file; $mod->VERSION } || ( $@ ? undef: 0 );
+}
+
+# report version without loading a module
+sub _version_of {
+    my $mod = pop; # method/function doesn't matter
+    my $file = $mod;
+    $file =~ s|::|/|g;
+    $file .= '.pm';
+    foreach my $dir ( @INC ) {
+        next if ref $dir;
+        my $path = File::Spec->catfile($dir, $file);
+        next unless -e $path;
+        require ExtUtils::MM_Unix;
+        return ExtUtils::MM_Unix->parse_version($path);
+    }
+    return undef;
 }
 
 # Load CPAN.pm and it's configuration
@@ -912,4 +931,4 @@ END_MAKE
 
 __END__
 
-#line 1178
+#line 1197

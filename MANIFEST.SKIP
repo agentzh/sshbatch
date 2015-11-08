@@ -12,4 +12,4 @@ po/foo\.po$
 po/meta\.po$
 t/tmp
 ^\.rsync$
-
+^reindex$
