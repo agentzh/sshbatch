@@ -54,8 +54,10 @@ OPTIONS:
     -t <timeout>  Specify timeout for net traffic.
     -u <user>     User account for SSH login.
     -v            Be verbose.
-    -w            Prompt for password (used for login and sudo,
+    -w            Prompt for password (used for both login and sudo,
                   could be privided by SSH_BATCH_PASSWORD).
+    -W            Prompt for password (just for sudo),
+                  should not be used with -w.
     -P            Prompt for passphrase (used for login,
                   could be privided by SSH_BATCH_PASSPHRASE).
     -tty          Pseudo-tty.
@@ -114,3 +116,12 @@ Cluster expression: foo.com
 Cluster set: foo.com
 --- status: 0
 
+
+
+=== TEST 9: -W and -w both show
+--- args: -w -W
+--- out
+--- err
+ERROR: Option -w should not be used together with -W.
+Use -w to use passowrd for login and sudo, -W for sudo only.
+--- status: 1
