@@ -162,7 +162,25 @@ while (1) {
             stderr_to_stdout => 1,
             async => 1,
             #tty => 1,
-        }, 'if [ ! -d ~/.ssh ]; then mkdir ~/.ssh; fi; chmod 700 ~/.ssh; cat >> ~/.ssh/authorized_keys && chmod 640 ~/.ssh/authorized_keys');
+        }, <<'_EOC_');
+read PUBLIC_KEY
+if [ ! -d ~/.ssh ]
+then
+  mkdir ~/.ssh
+  chmod 700 ~/.ssh
+fi
+if [ ! -f ~/.ssh/authorized_keys ]
+then
+  touch ~/.ssh/authorized_keys
+  chmod 640 ~/.ssh/authorized_keys
+fi
+if [ -z "$(grep "$PUBLIC_KEY" ~/.ssh/authorized_keys)" ]
+then
+  echo $PUBLIC_KEY >> ~/.ssh/authorized_keys
+else
+  exit 2
+fi
+_EOC_
         if (!defined $pid or $pid == -1) {
             $active_count--;
             print "===" x 7, " $host ", "===" x 7, "\n";
@@ -218,7 +236,13 @@ while (1) {
             print;
         }
         if ($exit > 0) {
-            warn "Remote command returns status code $exit.\n";
+            if ($exit == 2) {
+              if ($verbose) {
+                  warn "Public key is already present.\n";
+              }
+            } else {
+                warn "Remote command returns status code $exit.\n";
+            }
         }
         print "\n";
         close $in;
@@ -291,6 +315,8 @@ key2nodes - Push SSH public keys to remote clusters
 This script push local F<~/.ssh/id_rsa.pub> file (i.e. the SSH public key) onto the remote server's F<~/.ssh/authorized_keys>. It will chmod F<.ssh> to C<700> and F<.ssh/authorized_keys> to C<640>.
 
 If there's no .ssh directory on the remote server, it will try to create one.
+
+If the key already exists, it is ignored. If the verbose (-v) flag is active a message is displayed.
 
 Note that the sh/bash shell is assumed on the remote machines.
 
