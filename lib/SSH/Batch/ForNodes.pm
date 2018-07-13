@@ -55,13 +55,10 @@ sub init_rc () {
 sub load_rc ($$) {
     my ($rc, $rcfile) = @_;
     my $accum_ln;
-
-    while (<$rc>) {
-    	
+    while (<$rc>) {   	
         s/\#.*//;
         next if /^\s*$/;
         chomp;
-        
         if (s/\\\s*$//s) {
             $accum_ln .= " $_";
             next;
@@ -71,7 +68,6 @@ sub load_rc ($$) {
             undef $accum_ln;
             next;
         }
-        
         parse_line($_, $rcfile);
     }
 }
