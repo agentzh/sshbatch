@@ -99,24 +99,22 @@ sub parse_line ($$) {
             $Vars{$var} = $set;
         }
     }
-    elsif(/^\s*include\s*:\s*(.*)/i){
-        if($1 =~ /\s*"?(~?\/?([\w\.-]+\/)*[\w\.-]+)"?\s*$/){
-	        my $includefile = $1;
-	        if($includefile =~ /^~(.*)$/){
-	        	$includefile = ($ENV{SSH_BATCH_HOME} ||  File::HomeDir->my_home) . $1;        		
-	        }
-	        	
-	        if(! -e $includefile){
-	        	die "Include file $includefile does not exist!\n";
-	        }
-			open my $rcsub, $includefile or
-			    die "Can't open $includefile for reading: $!\n";
-			        
-			load_rc($rcsub, $includefile);
-			    
-			close $rcsub;
-        		
+    elsif(/^\s*include\s*:\s*"?([^"]*)"?\s*$/i){
+        my $includefile = $1;
+        if($includefile =~ /^~\/(.*)$/){
+        	$includefile = ($ENV{SSH_BATCH_HOME} ||  File::HomeDir->my_home) . '/' .  $1;
         }
+        	
+        if(! -e $includefile){
+        	die "Include file $includefile does not exist!\n";
+        }
+		open my $rcsub, $includefile or
+		    die "Can't open $includefile for reading: $!\n";
+		        
+		load_rc($rcsub, $includefile);
+		    
+		close $rcsub;
+        		
         return;
     	
     }
