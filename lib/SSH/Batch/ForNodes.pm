@@ -55,7 +55,7 @@ sub init_rc () {
 sub load_rc ($$) {
     my ($rc, $rcfile) = @_;
     my $accum_ln;
-    while (<$rc>) {   	
+    while (<$rc>) {
         s/\#.*//;
         next if /^\s*$/;
         chomp;
