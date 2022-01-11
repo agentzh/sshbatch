@@ -23,6 +23,7 @@ my (@exprs);
 my $concurrency = 20;
 my $fetch_value;
 my $ssh_cmd = $ENV{SSH_BATCH_SSH_CMD};
+my $pubkey_file = "";
 for (@ARGV) {
     if (defined $fetch_value) {
         $fetch_value->($_);
@@ -50,6 +51,8 @@ for (@ARGV) {
             $fetch_value = sub { $ssh_cmd = shift };
         } elsif ($group eq 'c') {
             $fetch_value = sub { $concurrency = shift };
+        } elsif ($group eq 'k') {
+            $fetch_value = sub { $pubkey_file = shift };
         } else {
             die "Unknown option: $_\n";
         }
@@ -72,12 +75,17 @@ if (!defined $home) {
     die "Can't find the home for the current user.\n";
 }
 
-my $pubkey_file = "$home/.ssh/id_rsa.pub";
+my $genkey = 0;
+if ($pubkey_file eq ""){
+    $pubkey_file = "$home/.ssh/id_rsa.pub";
+    $genkey = 1;
+}
+
 if (-f $pubkey_file) {
     if ($verbose) {
         warn "Found public key file $pubkey_file.\n";
     }
-} else {
+} elsif ($genkey == 1){
     my $cmd = "(echo; echo y; echo; echo) | ssh-keygen -q -t rsa";
     if ($verbose) {
         warn "Running command [$cmd]...\n";
@@ -85,6 +93,9 @@ if (-f $pubkey_file) {
     if (system($cmd) != 0) {
         die "Generating SSH key failed.\n";
     }
+}
+else{
+    die "Public key file $pubkey_file not found.";
 }
 
 open my $in, $pubkey_file or
@@ -236,6 +247,7 @@ OPTIONS:
     -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -k            SSH Public Key to upload.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)
@@ -279,6 +291,7 @@ key2nodes - Push SSH public keys to remote clusters
     -c <num>      Set SSH concurrency limit. (default: 20)
     -h            Print this help.
     -l            List the hosts and do nothing else.
+    -k            SSH Public Key to upload.
     -p <port>     Port for the remote SSH service.
     -ssh <path>   Specify an alternate ssh program.
                   (This overrides the SSH_BATCH_SSH_CMD environment.)
